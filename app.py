@@ -3,18 +3,13 @@ import os
 import uuid
 import pandas as pd
 
-from run import run_main 
+from process import process_files
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "outputs"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-
-
-def process_files(files):
-    v, iv = run_main(files)
-    return [v, iv]
 
 
 @app.route("/", methods=["GET", "POST"])
