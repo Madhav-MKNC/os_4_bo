@@ -44,6 +44,7 @@ def process_files(files):
     """
     merged_json = []
     failed_files = []
+    mknc_outputs = []
 
     # Step 1: Merge and filter data
     for f in files:
@@ -59,8 +60,10 @@ def process_files(files):
 
     # Save any failed files list
     if failed_files:
-        with open("failed_files.txt", 'w', encoding='utf-8') as file:
+        failed_files_output_file_path = os.path.join(OUTPUT_DIR, "failed_files.txt")
+        with open(failed_files_output_file_path, 'w', encoding='utf-8') as file:
             file.write("\n".join(failed_files))
+        mknc_outputs.append(failed_files_output_file_path)
 
     series = {}
     merged_json_valid_entries = []
@@ -90,7 +93,7 @@ def process_files(files):
             invalid_entries.append(entry)
 
     # Step 3: Validation of entries
-    for entry in merged_json_valid_entries[:]:  # Copy to avoid modifying while iterating
+    for entry in merged_json_valid_entries[:]:
         if not correct_ph_num(entry["*Customer Mobile"]):
             print("❌ Invalid primary phone")
             invalid_entries.append(entry)
@@ -121,9 +124,9 @@ def process_files(files):
     valid_file = os.path.join(OUTPUT_DIR, f"Order_Upload_Valid_{len(merged_json_valid_entries)}.csv")
     df_valid.to_csv(valid_file, index=False)
     print(f"✅ Saved valid file: {valid_file}")
+    mknc_outputs.append(valid_file)
 
     # Step 5: Save invalid CSV (if any)
-    invalid_file = None
     if len(invalid_entries):
         df_invalid = pd.json_normalize(invalid_entries)
         cols = order + ["FILENAME, INDEX"] if "FILENAME, INDEX" in df_invalid.columns else order
@@ -131,10 +134,7 @@ def process_files(files):
         invalid_file = os.path.join(OUTPUT_DIR, f"Invalid_{len(invalid_entries)}.csv")
         df_invalid.to_csv(invalid_file, index=False)
         print(f"⚠️ Saved invalid file: {invalid_file}")
+        mknc_outputs.append(invalid_file)
 
     # Step 6: Return output paths
-    outputs = [valid_file]
-    if invalid_file:
-        outputs.append(invalid_file)
-
-    return outputs
+    return mknc_outputs

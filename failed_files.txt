@@ -1,8 +1,0 @@
-input\GG Tamil orders file (Shiprocket) -251.csv
-input\GG Tamil orders file -469.csv
-input\GG other language File -232.csv
-input\GG Kannada Order File -81.csv
-input\GG Telugu Order File -283.csv
-input\GG Malayalam orders file -359.csv
-input\GG Telugu Order File -618.csv
-input\GG Malayalam orders file -187.csv

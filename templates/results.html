@@ -1,10 +1,92 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <body style="font-family:sans-serif;">
-    <h2>Processed Files</h2>
-    {% for f in files %}
-      <p><a href="{{ url_for('download_file', filename=f) }}">{{ f }}</a></p>
-    {% endfor %}
-    <a href="/">Back</a>
-  </body>
+    <head>
+        <style>
+            body {
+                background: black;
+                color: #00ffcc;
+                font-family: "Courier New", monospace;
+                text-align: center;
+                margin-top: 100px;
+            }
+            h2 {
+                font-size: 28px;
+                text-shadow: 0 0 15px #00ffcc;
+                margin-bottom: 40px;
+            }
+            .file-list {
+                display: inline-block;
+                text-align: left;
+                border: 1px solid #00ffcc;
+                border-radius: 10px;
+                padding: 20px 40px;
+                background: rgba(0, 255, 204, 0.05);
+                box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+            }
+            .file-list a {
+                text-decoration: none;
+                display: block;
+                margin: 10px 0;
+                transition: all 0.2s ease;
+                font-weight: bold;
+            }
+            .valid {
+                color: #00ff88;
+            }
+            .invalid {
+                color: #ff3366;
+            }
+            .failed {
+                color: #ffcc00;
+            }
+            .file-list a:hover {
+                color: #ffffff;
+                text-shadow: 0 0 10px #00ffcc;
+                transform: scale(1.03);
+            }
+            .back {
+                display: inline-block;
+                margin-top: 40px;
+                color: #00ffcc;
+                text-decoration: none;
+                border: 1px solid #00ffcc;
+                padding: 8px 16px;
+                border-radius: 6px;
+                transition: 0.2s;
+            }
+            .back:hover {
+                background: #00ffcc;
+                color: black;
+                box-shadow: 0 0 15px #00ffcc;
+            }
+            .pulse {
+                animation: pulse 1.5s infinite alternate;
+            }
+            @keyframes pulse {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0.5;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Processing Complete</h2>
+        <div class="file-list">
+            <p class="pulse">Generated Output Files:</p>
+            {% for f in files %} {% set cls = "valid" if "Valid" in f else
+            ("invalid" if "Invalid" in f else ("failed" if "failed_files" in f
+            else "")) %}
+            <a
+                href="{{ url_for('download_file', filename=f) }}"
+                class="{{ cls }}"
+                download
+                >{{ f }}</a
+            >
+            {% endfor %}
+        </div>
+        <a class="back" href="/">⬅ Back to Upload</a>
+    </body>
 </html>
