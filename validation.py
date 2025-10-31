@@ -14,10 +14,12 @@ def get_day():
 
 # 
 lang_codes = {
-    'english': 'EN', 'hindi': 'HI', 'kannada': 'KA',
+    'english': 'EN', 'hindi': 'HI',
+    'kannada': 'KA', 'kannad': 'KA',
     'telugu': 'TL', 'tamil': 'TA', 'malayalam': 'MA',
     'marathi': 'MH', 'gujarati': 'GJ', 'punjabi': 'PB',
-    'bengali': 'BG', 'nepali': 'NE', 'odia': 'OD', 'odiya': 'OD',
+    'bengali': 'BG', 'nepali': 'NE',
+    'odia': 'OD', 'odiya': 'OD', 'oriya': 'OD',
     'assamese': 'AS', 'manipuri': 'MN', 'bodo': 'BO',
     'urdu': 'UR', 'sindhi': 'SN'
 }
@@ -36,11 +38,10 @@ def correct_ph_num(ph_num_str):
 
 
 def make_valid_addr(addr_str):
+    addr_str = re.sub(r'Pin\s*\d{6}\s*Ph.*', '', addr_str, flags=re.IGNORECASE)
     if "#" in addr_str:
         addr_str = addr_str[addr_str.index("#"):]
-    pattern = r"Pin \d{6} Ph \d{10}"
-    addr_str = re.sub(pattern, "", addr_str)
-    return addr_str
+    return addr_str.strip()
 
 
 def correct_pincode(pin):
@@ -72,8 +73,14 @@ def get_order_id(entry, series: dict):
     order_id = "KA"
 
     # print(entry["*Product Name"].strip().split(" "))
-    bookname = entry["*Product Name"].split(" ")[0]
-    lang = entry["*Product Name"].split(" ")[1]
+    temp_xy = entry["*Product Name"].strip().split(" ")
+    # print(temp_xy)
+    bookname = " ".join(temp_xy[:-1])
+    lang = temp_xy[-1]
+    
+    # bookname = [0]
+    # lang = entry["*Product Name"].split(" ")[1]
+
     order_id += bookname + lang_codes[lang.lower()]
 
     day = get_day()

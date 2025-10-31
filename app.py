@@ -6,9 +6,9 @@ import pandas as pd
 from process import process_files
 
 app = Flask(__name__)
-UPLOAD_FOLDER = "uploads"
+# UPLOAD_FOLDER = "upload"
 OUTPUT_FOLDER = "outputs"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 
@@ -20,16 +20,20 @@ def upload_files():
 
         for f in files:
             if f and f.filename.endswith(".csv"):
-                path = os.path.join(UPLOAD_FOLDER, f.filename)
+                # path = os.path.join(UPLOAD_FOLDER, f.filename)
+                path = os.path.join(f.filename)
                 f.save(path)
                 saved_files.append(path)
 
         if not saved_files:
             return "No CSV files uploaded.", 400
 
-        output_paths = process_files(saved_files)
-        filenames = [os.path.basename(p) for p in output_paths]
-        return redirect(url_for("show_results", files=",".join(filenames)))
+        try:
+            output_paths = process_files(saved_files)
+            filenames = [os.path.basename(p) for p in output_paths]
+            return redirect(url_for("show_results", files=",".join(filenames)))
+        except:
+            return "OOPS"
 
     return render_template("upload.html")
 
