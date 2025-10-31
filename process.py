@@ -4,7 +4,7 @@ import json
 from validation import *
 
 INPUT_DIR = "input"
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "outputs"
 os.makedirs(INPUT_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
