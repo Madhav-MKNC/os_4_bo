@@ -77,7 +77,7 @@
         <div class="file-list">
             <p class="pulse">Generated Output Files:</p>
             {% for f in files %} {% set cls = "valid" if "Valid" in f else
-            ("invalid" if "Invalid" in f else ("failed" if "failed_files" in f
+            ("invalid" if "Invalid" in f else ("failed" if "failed" in f
             else "")) %}
             <a
                 href="{{ url_for('download_file', filename=f) }}"
