@@ -65,6 +65,8 @@ def process_files(files):
     # Save valid CSV
     df_valid = pd.json_normalize(valid_entries)
     valid_file = os.path.join(OUTPUT_DIR, f"Order_Upload_Valid_{len(valid_entries)}.csv")
+
+    df_valid = df_valid[order]
     df_valid.to_csv(valid_file, index=False)
 
     # Save invalid CSV if any
@@ -72,6 +74,8 @@ def process_files(files):
     if len(invalid_entries):
         df_invalid = pd.json_normalize(invalid_entries)
         invalid_file = os.path.join(OUTPUT_DIR, f"Invalid_{len(invalid_entries)}.csv")
+
+        df_invalid = df_invalid[order]
         df_invalid.to_csv(invalid_file, index=False)
 
     outputs = [valid_file]
