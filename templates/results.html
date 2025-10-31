@@ -7,7 +7,7 @@
                 color: #00ffcc;
                 font-family: "Courier New", monospace;
                 text-align: center;
-                margin-top: 100px;
+                margin: 100px 20px;
             }
             h2 {
                 font-size: 28px;
@@ -22,6 +22,8 @@
                 padding: 20px 40px;
                 background: rgba(0, 255, 204, 0.05);
                 box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+                max-width: 90vw;
+                word-wrap: break-word;
             }
             .file-list a {
                 text-decoration: none;
@@ -70,6 +72,29 @@
                     opacity: 0.5;
                 }
             }
+            @media (max-width: 600px) {
+                body {
+                    margin-top: 60px;
+                    font-size: 14px;
+                }
+                h2 {
+                    font-size: 22px;
+                    margin-bottom: 25px;
+                }
+                .file-list {
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                }
+                .file-list a {
+                    font-size: 14px;
+                    margin: 8px 0;
+                    word-break: break-all;
+                }
+                .back {
+                    padding: 6px 12px;
+                    font-size: 14px;
+                }
+            }
         </style>
     </head>
     <body>
@@ -77,8 +102,8 @@
         <div class="file-list">
             <p class="pulse">Generated Output Files:</p>
             {% for f in files %} {% set cls = "valid" if "Valid" in f else
-            ("invalid" if "Invalid" in f else ("failed" if "failed" in f
-            else "")) %}
+            ("invalid" if "Invalid" in f else ("failed" if "failed" in f else
+            "")) %}
             <a
                 href="{{ url_for('download_file', filename=f) }}"
                 class="{{ cls }}"

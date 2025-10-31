@@ -76,47 +76,70 @@ invalid_entries = []
 
 # assign order ids
 for it, entry in enumerate(merged_json):
-    # print(it, entry["*Product Name"].strip().split(" "))
+    row_mknc = ""
     try:
-        entry["*Order Id"] = get_order_id(entry, series)
-        entry["*Customer Mobile"] = make_valid_ph_(entry["*Customer Mobile"])
-        entry["Order Date as dd-mm-yyyy hh:MM"] = get_today()
-        entry["*Master SKU"] = entry["*Product Name"]
-        entry["*Partial COD (Yes/No)"] = "No"
-        entry["Customer Alternate Mobile"] = make_valid_alternate_ph_num(
+        row_mknc = "*Order Id"
+        entry[row_mknc] = get_order_id(entry, series)
+        
+        row_mknc = "*Customer Mobile"
+        entry[row_mknc] = make_valid_ph_(entry["*Customer Mobile"])
+
+        row_mknc = "Order Date as dd-mm-yyyy hh:MM"
+        entry[row_mknc] = get_today()
+
+        row_mknc = "*Master SKU"
+        entry[row_mknc] = entry["*Product Name"]
+
+        row_mknc = "*Partial COD (Yes/No)"
+        entry[row_mknc] = "No"
+
+        row_mknc = "Customer Alternate Mobile"
+        entry[row_mknc] = make_valid_alternate_ph_num(
             entry["*Customer Mobile"],
             entry["Customer Alternate Mobile"]
         )
-        entry["*Shipping Address Line 1"] = make_valid_addr(entry["*Shipping Address Line 1"])
-        series[entry["*Product Name"].lower()] += 1
-        
+
+        row_mknc = "*Shipping Address Line 1"
+        entry[row_mknc] = make_valid_addr(entry["*Shipping Address Line 1"])
+
+        key = entry["*Product Name"].lower()
+        series[key] = series.get(key, 0) + 1
+
         merged_json_valid_entries.append(entry)
-    except:
+    except Exception as e:
         print(it, entry["*Product Name"].strip().split(" "))
+        print(f"\n\n⚠️ INVALID ENTRY [{it}] — {entry.get('*Product Name')}\nReason: {e}\n")
         print(f"\n\n\nINVALID\n\n{entry}\n\n\n")
+        entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [{row_mknc}]"
         invalid_entries.append(entry)
         
 
-
-# validation
-
-for entry in merged_json_valid_entries:
+# Step 3: Validation of entries
+for entry in merged_json_valid_entries[:]:
     if not correct_ph_num(entry["*Customer Mobile"]):
+        print("❌ Invalid primary phone")
+        entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Customer Mobile]"
         invalid_entries.append(entry)
         merged_json_valid_entries.remove(entry)
         print(f"\n\n\nPrimary\n\n\n")
         continue
     if not correct_ph_num(entry["Customer Alternate Mobile"]):
+        print("❌ Invalid alternate phone")
+        entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [Customer Alternate Mobile]"
         invalid_entries.append(entry)
         merged_json_valid_entries.remove(entry)
         print(f"\n\n\nAlternate\n\n\n")
         continue
     if not correct_pincode(entry["*Shipping Address Postcode"]):
-        print(f"\n\n\nPostcode\n\n\n")
+        print("❌ Invalid postcode")
+        entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Shipping Address Postcode]"
         invalid_entries.append(entry)
         merged_json_valid_entries.remove(entry)
         continue
-    if len(entry["*Shipping Address Line 1"]) >= 180:
+
+    if len(str(entry["*Shipping Address Line 1"])) >= 180:
+        print("❌ Address too long")
+        entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Shipping Address Line 1]"
         invalid_entries.append(entry)
         merged_json_valid_entries.remove(entry)
         continue
@@ -137,6 +160,6 @@ df_valid.to_csv(os.path.join(OUTPUT_DIR, f"Order Upload File Valid {len(merged_j
 
 if len(invalid_entries):
     df_invalid = pd.json_normalize(invalid_entries)
-    df_invalid = df_invalid[order + ["FILENAME, INDEX"]]
+    df_invalid = df_invalid[order + ["FILENAME, INDEX, ROW"]]
     df_invalid.to_csv(os.path.join(OUTPUT_DIR, f"Invalid {len(invalid_entries)}.csv"), index=False)
 

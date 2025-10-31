@@ -52,7 +52,7 @@ def process_files(files):
             data_json = csv_to_json(f)
             for entry in data_json:
                 if pd.notna(entry.get("*Customer First Name")) and pd.notna(entry.get("*Customer Mobile")):
-                    entry["FILENAME, INDEX"] = f"{f}, {data_json.index(entry) - 2}"
+                    entry["FILENAME, INDEX, ROW"] = f"{f}, {data_json.index(entry) - 2}"
                     merged_json.append(entry)
         except Exception as e:
             print(f"❌ Failed to process {f}: {e}")
@@ -71,17 +71,31 @@ def process_files(files):
 
     # Step 2: Assign computed fields and validate during assignment
     for it, entry in enumerate(merged_json):
+        row_mknc = ""
         try:
-            entry["*Order Id"] = get_order_id(entry, series)
-            entry["*Customer Mobile"] = make_valid_ph_(entry["*Customer Mobile"])
-            entry["Order Date as dd-mm-yyyy hh:MM"] = get_today()
-            entry["*Master SKU"] = entry["*Product Name"]
-            entry["*Partial COD (Yes/No)"] = "No"
-            entry["Customer Alternate Mobile"] = make_valid_alternate_ph_num(
+            row_mknc = "*Order Id"
+            entry[row_mknc] = get_order_id(entry, series)
+            
+            row_mknc = "*Customer Mobile"
+            entry[row_mknc] = make_valid_ph_(entry["*Customer Mobile"])
+
+            row_mknc = "Order Date as dd-mm-yyyy hh:MM"
+            entry[row_mknc] = get_today()
+
+            row_mknc = "*Master SKU"
+            entry[row_mknc] = entry["*Product Name"]
+
+            row_mknc = "*Partial COD (Yes/No)"
+            entry[row_mknc] = "No"
+
+            row_mknc = "Customer Alternate Mobile"
+            entry[row_mknc] = make_valid_alternate_ph_num(
                 entry["*Customer Mobile"],
                 entry.get("Customer Alternate Mobile", "")
             )
-            entry["*Shipping Address Line 1"] = make_valid_addr(entry["*Shipping Address Line 1"])
+
+            row_mknc = "*Shipping Address Line 1"
+            entry[row_mknc] = make_valid_addr(entry["*Shipping Address Line 1"])
 
             key = entry["*Product Name"].lower()
             series[key] = series.get(key, 0) + 1
@@ -90,30 +104,35 @@ def process_files(files):
 
         except Exception as e:
             print(f"\n\n⚠️ INVALID ENTRY [{it}] — {entry.get('*Product Name')}\nReason: {e}\n")
+            entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [{row_mknc}]"
             invalid_entries.append(entry)
 
     # Step 3: Validation of entries
     for entry in merged_json_valid_entries[:]:
         if not correct_ph_num(entry["*Customer Mobile"]):
             print("❌ Invalid primary phone")
+            entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Customer Mobile]"
             invalid_entries.append(entry)
             merged_json_valid_entries.remove(entry)
             continue
 
         if not correct_ph_num(entry["Customer Alternate Mobile"]):
             print("❌ Invalid alternate phone")
+            entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [Customer Alternate Mobile]"
             invalid_entries.append(entry)
             merged_json_valid_entries.remove(entry)
             continue
 
         if not correct_pincode(entry["*Shipping Address Postcode"]):
             print("❌ Invalid postcode")
+            entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Shipping Address Postcode]"
             invalid_entries.append(entry)
             merged_json_valid_entries.remove(entry)
             continue
 
         if len(str(entry["*Shipping Address Line 1"])) >= 180:
             print("❌ Address too long")
+            entry["FILENAME, INDEX, ROW"] = entry["FILENAME, INDEX, ROW"] + f", [*Shipping Address Line 1]"
             invalid_entries.append(entry)
             merged_json_valid_entries.remove(entry)
             continue
@@ -129,7 +148,7 @@ def process_files(files):
     # Step 5: Save invalid CSV (if any)
     if len(invalid_entries):
         df_invalid = pd.json_normalize(invalid_entries)
-        cols = order + ["FILENAME, INDEX"] if "FILENAME, INDEX" in df_invalid.columns else order
+        cols = order + ["FILENAME, INDEX, ROW"] if "FILENAME, INDEX, ROW" in df_invalid.columns else order
         df_invalid = df_invalid[cols]
         invalid_file = os.path.join(OUTPUT_DIR, f"Invalid_{len(invalid_entries)}.csv")
         df_invalid.to_csv(invalid_file, index=False)

@@ -11,7 +11,7 @@
                 color: #00ffcc;
                 font-family: "Courier New", monospace;
                 text-align: center;
-                margin-top: 120px;
+                margin: 100px 20px;
             }
 
             h2 {
@@ -30,6 +30,7 @@
                 padding: 40px 60px;
                 box-shadow: 0 0 20px #00ffcc22;
                 transition: all 0.3s ease;
+                margin-inline: 20%;
             }
 
             form:hover {
@@ -120,7 +121,39 @@
                     opacity: 0.4;
                 }
             }
+
+            @media (max-width: 600px) {
+                body {
+                    margin-top: 60px;
+                    font-size: 14px;
+                }
+                h2 {
+                    font-size: 22px;
+                    margin-bottom: 25px;
+                }
+                form {
+                    width: 90%;
+                    margin-inline: auto;
+                    padding: 25px 20px;
+                }
+                input[type="file"] {
+                    width: 100%;
+                    font-size: 13px;
+                }
+                button {
+                    padding: 8px 16px;
+                    font-size: 14px;
+                }
+                .loader {
+                    width: 80px;
+                    height: 80px;
+                }
+                .glow-text {
+                    font-size: 15px;
+                }
+            }
         </style>
+
         <script>
             function showLoading() {
                 document.querySelector("form").style.display = "none";
