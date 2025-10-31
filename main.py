@@ -93,6 +93,6 @@ df_valid.to_csv(os.path.join(OUTPUT_DIR, f"Order Upload File Valid {len(merged_j
 
 if len(invalid_entries):
     df_invalid = pd.json_normalize(invalid_entries)
-    # df_invalid = df_invalid[order]
+    df_invalid = df_invalid[order]
     df_invalid.to_csv(os.path.join(OUTPUT_DIR, f"Invalid {len(invalid_entries)}.csv"), index=False)
 
