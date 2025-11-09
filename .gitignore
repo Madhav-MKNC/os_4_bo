@@ -2,3 +2,8 @@
 *.json
 *.xlsx
 __pycache__
+
+input
+outputs
+upload
+uploads
