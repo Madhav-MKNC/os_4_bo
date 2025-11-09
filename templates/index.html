@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: radial-gradient(
+                    circle at center,
+                    #000 60%,
+                    #001a14
+                );
+                color: #00ffcc;
+                font-family: "Courier New", monospace;
+                text-align: center;
+                margin: 100px 20px;
+            }
+
+            h2 {
+                font-size: 26px;
+                text-shadow: 0 0 15px #00ffcc, 0 0 30px #009988;
+                margin-bottom: 40px;
+            }
+
+            .option-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+                margin-inline: 20%;
+            }
+
+            .option-btn {
+                display: inline-block;
+                padding: 20px 40px;
+                border-radius: 10px;
+                border: 1px solid #00ffcc44;
+                background: rgba(0, 255, 204, 0.05);
+                color: #00ffcc;
+                font-size: 18px;
+                text-decoration: none;
+                text-transform: uppercase;
+                box-shadow: 0 0 20px #00ffcc22;
+                transition: all 0.3s ease;
+            }
+
+            .option-btn:hover {
+                background: #00ffcc22;
+                box-shadow: 0 0 30px #00ffcc55;
+                border-color: #00ffccaa;
+            }
+
+            @media (max-width: 600px) {
+                h2 {
+                    font-size: 22px;
+                    margin-bottom: 25px;
+                }
+                .option-container {
+                    margin-inline: auto;
+                }
+                .option-btn {
+                    width: 100%;
+                    padding: 15px;
+                    font-size: 16px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Welcome to the Order Processing Matrix</h2>
+
+        <div class="option-container">
+            <a class="option-btn" href="{{ url_for('upload_files') }}">
+                Process CSV Files
+            </a>
+            <a class="option-btn" href="{{ url_for('convert_excel') }}">
+                Convert & Process Excel
+            </a>
+        </div>
+    </body>
+</html>

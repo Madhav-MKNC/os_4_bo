@@ -1,0 +1,75 @@
+import os
+import pandas as pd
+import json
+import chardet
+import copy
+
+from validation import order
+
+
+final_columns = copy.deepcopy(order)
+columns = [
+    "ADDRESS ORIGINAL", "ADDRESS UPDATED", "STATE",
+    "DISTRICT", "BLOCK", "PIN", "COUNTRY CODE",
+    "PHONE", "ALTERNATE PHONE", "RE_ORDER", "NAME",
+    "DISTRICT_FROM_ADDRESS","STATE_FROM_ADDRESS",
+    "DISTRICT_MATCH_COUNT", "DIST_MATCHES_PIN_AND_ADDR",
+    "STATE_MATCHES_PIN_AND_ADDR", "BOOK NAME", "BOOK LANG",
+    "REPEAT ORDER", "EMAIL", "FAULTY"
+]
+
+entry["*Channel"] = "Custom",
+entry["*Payment Method(COD/Prepaid)"] = "Prepaid",
+entry["*Product Quantity"] = 1,
+entry["*Length (cm)"] = 10,
+entry["*Breadth (cm)"] = 10,
+entry["*Height (cm)"] = 10,
+entry["*Weight Of Shipment(kg)"] = 0.24,
+entry["*Selling Price(Per Unit Item Inclusive of Tax)"] = 20,
+entry["*Partial COD (Yes/No)"] = No,
+entry["Customer Last Name"] = "",
+entry["Billing Address Line 1"] = "",
+entry["Billing Address Line 2"] = "",
+entry["Billing Address Country"] = "",
+entry["Billing Address State"] = "",
+entry["Billing Address City"] = "",
+entry["Billing Address Postcode"] = "",
+entry["Tax %"] = "",
+entry["Discount(Per Unit Item)"] = "",
+entry["Shipping Charges(Per Order)"] = "",
+entry["COD Charges(Per Order)"] = "",
+entry["Gift Wrap Charges(Per Order)"] = "",
+entry["Total Discount (Per Order)"] = "",
+entry["Send Notification(True/False)"] = "",
+entry["Comment"] = "",
+entry["HSN Code"] = "",
+entry["Location Id"] = "",
+entry["Reseller Name"] = "",
+entry["Company Name"] = "",
+entry["latitude"] = "",
+entry["longitude"] = "",
+entry["Verified Order"] = "",
+entry["Is documents"] = "",
+entry["Order Type"] = "",
+entry["Order tag"] = "",
+entry["Shipping Address Line 2"] = "",
+entry["*Customer First Name"] = os_1_parsed["last name"],
+entry["Email (Optional)"] = os_1_parsed["email"],
+entry["*Customer Mobile"] = os_1_parsed["phone"],
+entry["Customer Alternate Mobile"] = os_1_parsed["alternate phone"],
+entry["*Shipping Address Line 1"] = os_1_parsed["Address updated"],
+entry["*Shipping Address Country"] = os_1_parsed["(THIS IS MISSING)"],
+entry["*Shipping Address State"] = os_1_parsed["State (STATE OR STATE FROM ADDRESS)"],
+entry["*Shipping Address City"] = os_1_parsed["District (DISTRICT OR DISTRICT FROM ADDRESS)"],
+entry["*Shipping Address Postcode"] = os_1_parsed["pin"],
+entry["*Product Name"] = os_1_parsed["(Book code + Language)"],
+entry["*Master SKU"] = os4,
+entry["*Order Id"] = os4,
+entry["Order Date as dd-mm-yyyy hh:MM"] = os4
+
+
+
+
+
+   
+
