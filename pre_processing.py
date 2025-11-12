@@ -57,7 +57,7 @@ def process_excel_file(input_path):
     out["*Product Name"] = df["MAPPED_BOOK_NAME"].astype(str) + " " + df["BOOK LANG"].astype(str)
 
     # Save output CSV
-    output_path = os.path.join("outputs", "output.csv")
+    output_path = os.path.join("input", "output.csv")
     out.to_csv(output_path, index=False)
 
     print("✅ New CSV file created:", output_path)
