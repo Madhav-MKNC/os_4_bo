@@ -32,17 +32,38 @@ def process_excel_file(input_path):
     for col in defaults:
         out[col] = ""
 
+    def check_empty(field_name, series):
+        empty_mask = series.isna() | (series.astype(str).str.strip() == "")
+        if empty_mask.any():
+            print(f"⚠️ Missing values detected in column '{field_name}': {empty_mask.sum()} rows")
+
     # Mapped columns
     out["*Customer First Name"] = df["NAME"]
+    check_empty("NAME", df["NAME"])
+
     out["Email (Optional)"] = df["EMAIL"]
+    check_empty("EMAIL", df["EMAIL"])
+
     out["*Customer Mobile"] = df["PHONE"]
+    check_empty("PHONE", df["PHONE"])
+
     out["Customer Alternate Mobile"] = df["ALTERNATE PHONE"]
+    check_empty("ALTERNATE PHONE", df["ALTERNATE PHONE"])
+
     out["*Shipping Address Line 1"] = df["ADDRESS UPDATED"]
     # out["*Shipping Address Country"] = "df["COUNTRY CODE"]"
+    check_empty("ADDRESS UPDATED", df["ADDRESS UPDATED"])
+
     out["*Shipping Address Country"] = "INDIA"
+
     out["*Shipping Address State"] = df["STATE"].fillna(df["STATE"])
+    check_empty("STATE", df["STATE"])
+
     out["*Shipping Address City"] = df["DISTRICT"].fillna(df["DISTRICT"])
+    check_empty("DISTRICT", df["DISTRICT"])
+
     out["*Shipping Address Postcode"] = df["PIN"]
+    check_empty("PIN", df["PIN"])
 
     # Use lowercase mapping
     df["MAPPED_BOOK_NAME"] = (
@@ -52,9 +73,11 @@ def process_excel_file(input_path):
         .map(book_name_codes)
         .fillna(df["BOOK NAME"])
     )
+    check_empty("BOOK NAME", df["BOOK NAME"])
 
     # Combine mapped name and language
     out["*Product Name"] = df["MAPPED_BOOK_NAME"].astype(str) + " " + df["BOOK LANG"].astype(str)
+    check_empty("BOOK LANG", df["BOOK LANG"])
 
     # Save output CSV
     output_path = os.path.join("input", "output.csv")
