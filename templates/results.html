@@ -31,6 +31,10 @@
                 margin: 10px 0;
                 transition: all 0.2s ease;
                 font-weight: bold;
+                color: inherit; /* Ensure links inherit the parent color */
+                outline: none; /* Remove outline on focus */
+                background: transparent; /* Remove any background highlight */
+                border: none; /* Remove border if there is any */
             }
             .valid {
                 color: #00ff88;
@@ -45,6 +49,15 @@
                 color: #ffffff;
                 text-shadow: 0 0 10px #00ffcc;
                 transform: scale(1.03);
+            }
+            .file-list a:focus,
+            .file-list a:active {
+                color: inherit !important; /* Ensure no color change */
+                text-shadow: none !important; /* Remove any text-shadow */
+                transform: none !important; /* Prevent scaling on click */
+                background: transparent !important; /* Remove background highlight */
+                outline: none !important; /* Ensure no outline */
+                border: none !important; /* Remove border if it's applied */
             }
             .back {
                 display: inline-block;

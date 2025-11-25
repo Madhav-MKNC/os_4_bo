@@ -36,11 +36,13 @@ def get_data(filepath) -> list:
         to_address = entry.get("*Shipping Address Line 1")
         if not to_address:
             print(entry)
+            continue
             raise ValueError("Missing required field: '*Shipping Address Line 1'")
 
         item_name = entry.get("*Product Name")
         if not item_name:
             print(entry)
+            continue
             raise ValueError("Missing required field: '*Product Name'")
 
         processed_data.append({

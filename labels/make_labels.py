@@ -1,126 +1,200 @@
 import os
+import re
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 
-# Import the data fetcher
+# data loader
 from labels import fetch_address
 
+# --- CONSTANTS ---
+FROM_ADDRESS = (
+    "Satlok Ashram Nandanwan, Bengaluru, KA 562163 "
+    "Phone: +91-98XXXXXXX GST: 29ABCDE1234F1Z5"
+)
 
-# TO Address
-FROM_ADDRESS = "Satlok Ashram, Satlok Naamdeen Centre, 62, Marasandra, Doddaballapur Main Road, Bangalore Rural, Karnataka 562163, India"
-
-# ---- PAGE + STYLE ----
-PAGE_W, PAGE_H = 3*inch, 5*inch         # 3x5 inches
-BORDER_PT = 2                            # outer border
-DIVIDER_PT = 2                           # lines between sections
-PAD = 0.20*inch                          # inner padding
-LEADING = 1.25                           # line-height multiplier
+PAGE_W, PAGE_H = 3 * inch, 5 * inch
+PAD = 0.20 * inch
+BORDER_PT = 2
+DIVIDER_PT = 1
+LEADING = 1.30
 
 FONT_REG = "Helvetica"
 FONT_BOLD = "Helvetica-Bold"
-TO_FS_MAX, FROM_FS_MAX, ITEM_FS_MAX = 12, 12, 11
-FS_MIN = 9                               # don't go below this
 
-# Target vertical allocation (fractions of inner height)
-ALLOC_TO, ALLOC_FROM = 0.42, 0.40        # item gets the rest
+FS_TO = 10
+FS_ITEM = 11
+FS_FROM = 10
+FS_LABEL = 11  # "To:" / "From:" (bold)
 
-
-def wrap_lines(text, font_name, font_size, max_width):
-    words = text.split()
-    lines, cur = [], ""
-    for w in words:
-        trial = f"{cur} {w}".strip()
-        if pdfmetrics.stringWidth(trial, font_name, font_size) <= max_width or not cur:
-            cur = trial
-        else:
-            lines.append(cur)
-            cur = w
-    if cur:
-        lines.append(cur)
-    return lines
+# --- Regex helpers (case-insensitive) ---
+# --- Parsing helpers (case-insensitive) ---
+DIST_RX = re.compile(
+    r"\b(?:dist|district)\s*[:\-]?\s*([A-Za-z ]+?)(?=\s*(?:pin(?:\s*code)?|pincode|ph|phone|mob|mobile)\b|[\d,]|$)",
+    re.IGNORECASE,
+)
+PIN_RX  = re.compile(r"\b(?:pin|pin\s*code|pincode)\s*[:\-]?\s*(\d{6})\b", re.IGNORECASE)
+PH_RX   = re.compile(r"\b(?:ph|phone|mob|mobile)\s*[:\-]?\s*([+0-9][0-9 \-]{6,})", re.IGNORECASE)
 
 
-def fit_text_to_height(text, font_name, fs_max, fs_min, max_width, max_height):
-    fs = fs_max
-    while fs >= fs_min:
-        lines = wrap_lines(text, font_name, fs, max_width) if text.strip() else [""]
-        total_h = len(lines) * fs * LEADING
-        if total_h <= max_height:
-            return fs, lines, total_h
-        fs -= 0.5
-    # last resort: clip
-    return max(fs_min, 6), lines, total_h
+def _clean_spaces(s: str) -> str:
+    s = s.replace("\n", " ").replace(",", " ")
+    s = re.sub(r"\s+", " ", s)
+    return s.strip()
 
+def _remove_spans(text: str, spans):
+    if not spans:
+        return text
+    spans = sorted(spans)
+    out, prev = [], 0
+    for a, b in spans:
+        out.append(text[prev:a])
+        prev = b
+    out.append(text[prev:])
+    return "".join(out)
 
-def draw_block(c, x, y_top, w, h, text, font_name, fs_max, add_divider=True, bold=False):
-    fs, lines, total_h = fit_text_to_height(text, font_name, fs_max, FS_MIN, w, h)
-    y = y_top - fs  # baseline
-    c.setFont(font_name, fs)
+def parse_to_blocks(raw: str):
+    """
+    Returns (residual_address, structured_lines_text).
+    residual = original address with dist/pin/phone fragments removed.
+    structured = newline-joined District/Pin/Phone (only if present).
+    """
+    original = raw
+    s = _clean_spaces(original)
+
+    spans = []
+    dist = pin = phone = None
+
+    m = DIST_RX.search(s)
+    if m:
+        dist = m.group(1).strip(" ,.-")
+        spans.append(m.span())
+
+    m = PIN_RX.search(s)
+    if m:
+        pin = m.group(1)
+        spans.append(m.span())
+
+    m = PH_RX.search(s)
+    if m:
+        phone = re.sub(r"[ \-]+", " ", m.group(1)).strip()
+        spans.append(m.span())
+
+    residual = _remove_spans(s, spans)
+    residual = _clean_spaces(residual) or _clean_spaces(original)
+
+    structured = []
+    if dist: structured.append(f"District: {dist}")
+    if pin:  structured.append(f"Pin: {pin}")
+    if phone: structured.append(f"Phone: {phone}")
+
+    return residual, "\n".join(structured)
+
+# --- layout helpers ---
+def wrap(text, font, size, max_width):
+    out = []
+    paras = text.splitlines() if text else [""]
+    for para in paras:
+        words = para.split()
+        if not words:
+            out.append("")
+            continue
+        line = ""
+        for w in words:
+            test = (line + " " + w).strip()
+            if pdfmetrics.stringWidth(test, font, size) <= max_width or not line:
+                line = test
+            else:
+                out.append(line)
+                line = w
+        if line:
+            out.append(line)
+    return out
+
+def draw_left(c, x, y, w, text, size):
+    lines = wrap(text, FONT_REG, size, w)
+    c.setFont(FONT_REG, size)
     for ln in lines:
-        c.drawString(x, y, ln)
-        y -= fs * LEADING
-    if add_divider:
-        c.setLineWidth(DIVIDER_PT)
-        c.line(PAD, y, PAGE_W - PAD, y)
-    return y  # returns current y (below block)
+        c.drawString(x, y - size, ln)
+        y -= size * LEADING
+    return y
 
+def draw_right(c, x, y, w, text, size):
+    lines = wrap(text, FONT_REG, size, w)
+    c.setFont(FONT_REG, size)
+    for ln in lines:
+        tw = pdfmetrics.stringWidth(ln, FONT_REG, size)
+        c.drawString(x + w - tw, y - size, ln)
+        y -= size * LEADING
+    return y
 
-def draw_label(c, to_text, from_text, item_text):
-    # outer border
+# --- draw one label exactly like the screenshot ---
+def draw_label(c, to_raw, from_text, item_text):
+    # border
     c.setLineWidth(BORDER_PT)
     c.rect(BORDER_PT/2, BORDER_PT/2, PAGE_W - BORDER_PT, PAGE_H - BORDER_PT)
 
-    inner_top = PAGE_H - PAD
-    inner_bottom = PAD
-    inner_height = inner_top - inner_bottom
-
     x = PAD
-    w = PAGE_W - 2*PAD
+    w = PAGE_W - 2 * PAD
+    y = PAGE_H - PAD
 
-    # TO block
-    to_h = inner_height * ALLOC_TO
-    y = draw_block(c, x, inner_top, w, to_h, to_text, FONT_REG, TO_FS_MAX, add_divider=True)
-    # y = draw_block(c, x, inner_top, w, to_h, to_text, FONT_BOLD, TO_FS_MAX, add_divider=True)
+    # "To:" (bold) on its own line, left
+    c.setFont(FONT_BOLD, FS_LABEL)
+    c.drawString(x, y - FS_LABEL, "To:")
+    y -= FS_LABEL * LEADING
 
-    # FROM block
-    from_h = inner_height * ALLOC_FROM
-    # small spacing below divider
-    y -= 0.08*inch
-    y = draw_block(c, x, y, w, from_h, from_text, FONT_REG, FROM_FS_MAX, add_divider=True)
+    # TO content: residual address, then District/Pin/Phone
+    residual, structured = parse_to_blocks(to_raw)
+    y = draw_left(c, x, y, w, residual, FS_TO)
+    if structured:
+        y = draw_left(c, x, y, w, structured, FS_TO)
 
-    # ITEM block (rest)
-    y -= 0.08*inch
-    remaining_h = y - inner_bottom
-    draw_block(c, x, y, w, remaining_h, item_text, FONT_REG, ITEM_FS_MAX, add_divider=False)
+    # blank line then item
+    y -= 0.12 * inch
+    y = draw_left(c, x, y, w, item_text, FS_ITEM)
 
+    # divider line
+    y -= 0.20 * inch
+    c.setLineWidth(DIVIDER_PT)
+    c.line(x, y, x + w, y)
+    y -= 0.40 * inch
 
+    # "From:" (bold) on its own line, right
+    c.setFont(FONT_BOLD, FS_LABEL)
+    lab_w = pdfmetrics.stringWidth("From:", FONT_BOLD, FS_LABEL)
+    c.drawString(x + w - lab_w, y - FS_LABEL, "From:")
+    y -= FS_LABEL * LEADING
+
+    # FROM content right-aligned
+    draw_right(c, x, y, w, from_text, FS_FROM)
+
+# --- public API ---
 def generate_label_pdf(input_path, output_folder):
     """
     Reads data from input_path (CSV), generates a PDF in output_folder.
     Returns the filename of the generated PDF.
     """
-    # 1. Get Data
     data = fetch_address.get_data(input_path)
-    
-    # 2. Define Output Path
-    # Create a filename based on the input, or just a generic timestamped one.
-    base_name = os.path.splitext(os.path.basename(input_path))[0]
-    output_filename = f"LABELS_{base_name}.pdf"
-    output_full_path = os.path.join(output_folder, output_filename)
 
-    # 3. Draw PDF
-    c = canvas.Canvas(output_full_path, pagesize=(PAGE_W, PAGE_H))
-    
-    for obj in data:
-        to_text = str(obj.get("to", "")).strip()
+    base = os.path.splitext(os.path.basename(input_path))[0]
+    out_name = f"LABELS_{base}.pdf"
+    out_path = os.path.join(output_folder, out_name)
+
+    c = canvas.Canvas(out_path, pagesize=(PAGE_W, PAGE_H))
+    for row in data:
+        to_text = str(row.get("to", "")).strip()
+        item_text = str(row.get("item", "")).strip()
         from_text = FROM_ADDRESS.strip()
-        item_text = str(obj.get("item", "")).strip()
-        
         draw_label(c, to_text, from_text, item_text)
         c.showPage()
-        
     c.save()
-    
-    return output_filename
+    return out_name
 
+# optional CLI
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: python make_labels.py <input.csv> <output_folder>")
+        sys.exit(1)
+    infile, outdir = sys.argv[1], sys.argv[2]
+    print(os.path.join(outdir, generate_label_pdf(infile, outdir)))
