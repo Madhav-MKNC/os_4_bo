@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, send_from_directory, redirect
 import os
 from processing import process_files
 from pre_processing import process_excel_file  # first step
+from labels.make_labels import generate_label_pdf 
 
 app = Flask(__name__)
 UPLOAD_FOLDER = "input"      # must match process_files
@@ -79,6 +80,32 @@ def convert_excel():
             return f"Error during Excel conversion or processing: {e}", 500
 
     return render_template("convert_excel.html")
+
+
+@app.route("/generate_labels", methods=["GET", "POST"])
+def generate_labels():
+    if request.method == "POST":
+        file = request.files.get("file")
+        
+        # Check if file exists and is a CSV
+        if not file or not file.filename.endswith(".csv"):
+            return "Please upload a valid CSV file.", 400
+        
+        # Save input file
+        input_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(input_path)
+
+        try:
+            # Call function from make_labels.py
+            # Pass input path and output folder; Expect back the PDF filename
+            output_filename = generate_label_pdf(input_path, OUTPUT_FOLDER)
+            
+            return redirect(url_for("show_results", files=output_filename))
+            
+        except Exception as e:
+            return f"Error generating labels: {e}", 500
+
+    return render_template("generate_labels.html")
 
 
 if __name__ == "__main__":

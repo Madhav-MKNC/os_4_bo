@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Generate Labels</title>
+        <style>
+            body {
+                background: radial-gradient(
+                    circle at center,
+                    #000 60%,
+                    #001a14
+                );
+                color: #00ffcc;
+                font-family: "Courier New", monospace;
+                text-align: center;
+                margin: 100px 20px;
+            }
+
+            h2 {
+                font-size: 26px;
+                text-shadow: 0 0 15px #00ffcc, 0 0 30px #009988;
+                margin-bottom: 40px;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                background: rgba(0, 255, 204, 0.05);
+                border: 1px solid #00ffcc44;
+                border-radius: 10px;
+                padding: 40px 60px;
+                box-shadow: 0 0 20px #00ffcc22;
+                transition: all 0.3s ease;
+                margin-inline: 20%;
+            }
+
+            form:hover {
+                box-shadow: 0 0 30px #00ffcc55;
+                border-color: #00ffccaa;
+            }
+
+            input[type="file"] {
+                color: #00ffcc;
+                background: transparent;
+                border: 1px solid #00ffcc55;
+                padding: 10px;
+                border-radius: 6px;
+                font-size: 14px;
+                cursor: pointer;
+                width: 260px;
+                text-align: center;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button {
+                background: #00ffcc11;
+                color: #00ffcc;
+                border: 1px solid #00ffcc55;
+                border-radius: 4px;
+                padding: 6px 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button:hover {
+                background: #00ffcc22;
+            }
+
+            button {
+                margin-top: 20px;
+                padding: 10px 24px;
+                border: none;
+                border-radius: 6px;
+                background: #00ffcc22;
+                color: #00ffcc;
+                font-size: 15px;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+            }
+
+            button:hover {
+                background: #00ffcc55;
+                box-shadow: 0 0 15px #00ffcc88;
+            }
+
+            .loading-container {
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .loader {
+                width: 120px;
+                height: 120px;
+                border: 3px solid #00ffcc;
+                border-top-color: transparent;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .glow-text {
+                font-size: 18px;
+                text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+                animation: flicker 1.5s infinite alternate;
+            }
+
+            @keyframes flicker {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0.4;
+                }
+            }
+
+            @media (max-width: 600px) {
+                body {
+                    margin-top: 60px;
+                    font-size: 14px;
+                }
+                h2 {
+                    font-size: 22px;
+                    margin-bottom: 25px;
+                }
+                form {
+                    width: 90%;
+                    margin-inline: auto;
+                    padding: 25px 20px;
+                }
+                input[type="file"] {
+                    width: 100%;
+                    font-size: 13px;
+                }
+                button {
+                    padding: 8px 16px;
+                    font-size: 14px;
+                }
+                .loader {
+                    width: 80px;
+                    height: 80px;
+                }
+                .glow-text {
+                    font-size: 15px;
+                }
+            }
+        </style>
+
+        <script>
+            function showLoading() {
+                document.querySelector("form").style.display = "none";
+                document.querySelector(".loading-container").style.display =
+                    "flex";
+            }
+        </script>
+    </head>
+
+    <body>
+        <h2>Generate Labels PDF</h2>
+        <form
+            action="/generate_labels"
+            method="POST"
+            enctype="multipart/form-data"
+            onsubmit="showLoading()"
+        >
+            <input type="file" name="file" accept=".csv" required />
+            <button type="submit">Generate PDF</button>
+        </form>
+
+        <div class="loading-container">
+            <div class="loader"></div>
+            <div class="glow-text">Initializing PDF Engine...</div>
+            <div class="glow-text" style="animation-delay: 0.3s">
+                Parsing Label Data...
+            </div>
+            <div class="glow-text" style="animation-delay: 0.6s">
+                Calculating Dimensions...
+            </div>
+            <div class="glow-text" style="animation-delay: 0.9s">
+                Rendering Final Document...
+            </div>
+        </div>
+    </body>
+</html>

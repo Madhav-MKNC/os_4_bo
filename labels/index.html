@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>4x6 Label</title>
+        <style>
+            @page {
+                size: 3in 5in;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+            }
+            .label {
+                width: 4in;
+                height: 6in;
+                padding: 0.2in;
+                box-sizing: border-box;
+                border: 2px solid #000;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                gap: 0.18in;
+            }
+            .block {
+                padding-bottom: 0.15in;
+                border-bottom: 2px solid #000;
+                font-size: 13pt;
+                line-height: 1.3;
+            }
+            .item {
+                font-size: 12pt;
+                line-height: 1.3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="label">
+            <!-- TO (Top) -->
+            <div class="block">
+                B Srinivas<br />
+                S/o Satyanarayana #10–71<br />
+                Street BB Zarda Company<br />
+                Kothapally Haveli, Karimnagar, TS 505001<br />
+                Phone: +91-9XXXXXXXXX
+            </div>
+            <!-- FROM (Middle) -->
+            <div class="block">
+                Satlok Ashram<br />
+                Nandanwan, Bengaluru, KA 562163<br />
+                Phone: +91-98XXXXXXX<br />
+                GST: 29ABCDE1234F1Z5
+            </div>
+            <!-- Item Description (Bottom) -->
+            <div class="item">GG Telugu</div>
+        </div>
+    </body>
+</html>
