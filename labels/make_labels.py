@@ -19,7 +19,7 @@ LEADING = 1.25                           # line-height multiplier
 
 FONT_REG = "Helvetica"
 FONT_BOLD = "Helvetica-Bold"
-TO_FS_MAX, FROM_FS_MAX, ITEM_FS_MAX = 13, 13, 12
+TO_FS_MAX, FROM_FS_MAX, ITEM_FS_MAX = 12, 12, 11
 FS_MIN = 9                               # don't go below this
 
 # Target vertical allocation (fractions of inner height)
@@ -80,7 +80,8 @@ def draw_label(c, to_text, from_text, item_text):
 
     # TO block
     to_h = inner_height * ALLOC_TO
-    y = draw_block(c, x, inner_top, w, to_h, to_text, FONT_BOLD, TO_FS_MAX, add_divider=True)
+    y = draw_block(c, x, inner_top, w, to_h, to_text, FONT_REG, TO_FS_MAX, add_divider=True)
+    # y = draw_block(c, x, inner_top, w, to_h, to_text, FONT_BOLD, TO_FS_MAX, add_divider=True)
 
     # FROM block
     from_h = inner_height * ALLOC_FROM
