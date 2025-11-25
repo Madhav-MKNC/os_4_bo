@@ -24,8 +24,6 @@
                 gap: 0.18in;
             }
             .block {
-                padding-bottom: 0.15in;
-                border-bottom: 2px solid #000;
                 font-size: 13pt;
                 line-height: 1.3;
             }
@@ -33,27 +31,45 @@
                 font-size: 12pt;
                 line-height: 1.3;
             }
+            .line {
+                border-top: 1px solid #000;
+                margin: 0.1in 0;
+            }
+            .to-from-wrapper {
+                display: flex;
+                flex-direction: column;
+            }
+            .from {
+                text-align: right;
+            }
         </style>
     </head>
     <body>
         <div class="label">
-            <!-- TO (Top) -->
-            <div class="block">
-                B Srinivas<br />
-                S/o Satyanarayana #10–71<br />
-                Street BB Zarda Company<br />
-                Kothapally Haveli, Karimnagar, TS 505001<br />
-                Phone: +91-9XXXXXXXXX
+            <!-- TO Section -->
+            <div class="to">
+                <strong>To:</strong><br />
+                Anil #57<br />
+                Kb Colony<br />
+                District: Mox<br />
+                Pin: 123456<br />
+                Phone: 9876543210<br />
             </div>
-            <!-- FROM (Middle) -->
-            <div class="block">
+
+            <!-- Item Description -->
+            <div class="item">GG Malayalam</div>
+
+            <!-- Line Divider -->
+            <div class="line"></div>
+
+            <!-- FROM Section -->
+            <div class="from">
+                <strong>From:</strong><br />
                 Satlok Ashram<br />
                 Nandanwan, Bengaluru, KA 562163<br />
                 Phone: +91-98XXXXXXX<br />
                 GST: 29ABCDE1234F1Z5
             </div>
-            <!-- Item Description (Bottom) -->
-            <div class="item">GG Telugu</div>
         </div>
     </body>
 </html>
