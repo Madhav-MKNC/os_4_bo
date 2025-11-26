@@ -9,8 +9,11 @@ from labels import fetch_address
 
 # --- CONSTANTS ---
 FROM_ADDRESS = (
-    "Satlok Ashram Nandanwan, Bengaluru, KA 562163 "
-    "Phone: +91-98XXXXXXX GST: 29ABCDE1234F1Z5"
+    "Satlok Ashram, Satlok Naamdeen",
+"Centre, 62, Marasandra",
+"Doddaballapur Main Road",
+"Bangalore Rural, Karnataka",
+"562163, India"
 )
 
 PAGE_W, PAGE_H = 3 * inch, 5 * inch
