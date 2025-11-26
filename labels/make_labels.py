@@ -9,10 +9,10 @@ from labels import fetch_address
 
 # --- CONSTANTS ---
 FROM_ADDRESS = (
-    "Satlok Ashram, Satlok Naamdeen",
-"Centre, 62, Marasandra",
-"Doddaballapur Main Road",
-"Bangalore Rural, Karnataka",
+    "Satlok Ashram, Satlok Naamdeen"
+"Centre, 62, Marasandra"
+"Doddaballapur Main Road"
+"Bangalore Rural, Karnataka"
 "562163, India"
 )
 
