@@ -9,10 +9,10 @@ from labels import fetch_address
 
 # --- CONSTANTS ---
 FROM_ADDRESS = (
-    "Satlok Ashram, Satlok Naamdeen Centre, 62, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India"
+    "Satlok Ashram, Satlok Naamdeen Centre, 62, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India, 8884445281"
 )
 
-PAGE_W, PAGE_H = 3 * inch, 5 * inch
+PAGE_W, PAGE_H = 4 * inch, 6 * inch
 PAD = 0.20 * inch
 BORDER_PT = 2
 DIVIDER_PT = 1
@@ -135,37 +135,96 @@ def draw_label(c, to_raw, from_text, item_text):
 
     x = PAD
     w = PAGE_W - 2 * PAD
+
+    # ============================================================
+    # 1) MEASURE TOP BLOCK (TO header + TO text)
+    # ============================================================
+    # header height
+    to_header_h = FS_LABEL * LEADING
+
+    # text lines
+    residual, structured = parse_to_blocks(to_raw)
+    to_lines_1 = wrap(residual, FONT_REG, FS_TO, w)
+    to_lines_2 = wrap(structured, FONT_REG, FS_TO, w) if structured else []
+
+    to_text_h = (len(to_lines_1) + len(to_lines_2)) * (FS_TO * LEADING)
+
+    top_block_h = to_header_h + to_text_h
+
+
+    # ============================================================
+    # 2) MEASURE BOTTOM BLOCK (FROM header + FROM text)
+    # ============================================================
+    from_header_h = FS_LABEL * LEADING
+    from_lines = wrap(from_text, FONT_REG, FS_FROM, w)
+    from_text_h = len(from_lines) * (FS_FROM * LEADING)
+    bottom_block_h = from_header_h + from_text_h
+
+
+    # ============================================================
+    # 3) DETERMINE AVAILABLE MIDDLE HEIGHT
+    #    (for item + divider + spacing around them)
+    # ============================================================
+    used_top = top_block_h
+    used_bottom = bottom_block_h
+    free_middle = PAGE_H - 2*PAD - used_top - used_bottom
+
+    # middle padding top/bottom
+    mid_pad = free_middle * 0.3
+    # item block
+    item_h = FS_ITEM * LEADING
+    # divider line spacing
+    divider_pad = free_middle * 0.10
+
+    # Y start for drawing
     y = PAGE_H - PAD
 
-    # "To:" (bold) on its own line, left
+    # ============================================================
+    # DRAW — TOP BLOCK
+    # ============================================================
+    # "To:"
     c.setFont(FONT_BOLD, FS_LABEL)
     c.drawString(x, y - FS_LABEL, "To:")
-    y -= FS_LABEL * LEADING
+    y -= to_header_h
 
-    # TO content: residual address, then District/Pin/Phone
-    residual, structured = parse_to_blocks(to_raw)
+    # TO text
     y = draw_left(c, x, y, w, residual, FS_TO)
     if structured:
         y = draw_left(c, x, y, w, structured, FS_TO)
 
-    # blank line then item
-    y -= 0.12 * inch
+    # Middle padding before item
+    y -= mid_pad
+
+
+    # ============================================================
+    # DRAW — ITEM
+    # ============================================================
     y = draw_left(c, x, y, w, item_text, FS_ITEM)
 
+    # spacing to divider
+    y -= divider_pad
+
     # divider line
-    y -= 0.20 * inch
     c.setLineWidth(DIVIDER_PT)
     c.line(x, y, x + w, y)
-    y -= 0.40 * inch
+    y -= divider_pad
 
-    # "From:" (bold) on its own line, right
+
+    # ============================================================
+    # DRAW — BOTTOM BLOCK (FROM aligned to bottom)
+    # ============================================================
+    # bottom anchor
+    # yf = PAD + bottom_block_h
+    yf = PAD + bottom_block_h + 0.75*inch
+
+    # "From:"
     c.setFont(FONT_BOLD, FS_LABEL)
     lab_w = pdfmetrics.stringWidth("From:", FONT_BOLD, FS_LABEL)
-    c.drawString(x + w - lab_w, y - FS_LABEL, "From:")
-    y -= FS_LABEL * LEADING
+    c.drawString(x + w - lab_w, yf - FS_LABEL, "From:")
+    yf -= from_header_h
 
-    # FROM content right-aligned
-    draw_right(c, x, y, w, from_text, FS_FROM)
+    # FROM text
+    draw_right(c, x, yf, w, from_text, FS_FROM)
 
 # --- public API ---
 def generate_label_pdf(input_path, output_folder):
