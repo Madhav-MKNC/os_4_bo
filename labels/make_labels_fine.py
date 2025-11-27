@@ -12,7 +12,7 @@ FROM_ADDRESS = (
     "Satlok Ashram, Satlok Naamdeen Centre, 62, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India, 8884445281"
 )
 
-PAGE_W, PAGE_H = 4 * inch, 3 * inch
+PAGE_W, PAGE_H = 4 * inch, 6 * inch
 PAD = 0.20 * inch
 BORDER_PT = 2
 DIVIDER_PT = 1
@@ -136,53 +136,40 @@ def draw_label(c, to_raw, from_text, item_text):
     x = PAD
     w = PAGE_W - 2 * PAD
 
-    # ============================================================
-    # 1) MEASURE TOP BLOCK (TO header + TO text)
-    # ============================================================
-    # header height
+    # ---------- MEASURE CONTENT ----------
+    # TO
     to_header_h = FS_LABEL * LEADING
-
-    # text lines
     residual, structured = parse_to_blocks(to_raw)
     to_lines_1 = wrap(residual, FONT_REG, FS_TO, w)
     to_lines_2 = wrap(structured, FONT_REG, FS_TO, w) if structured else []
-
     to_text_h = (len(to_lines_1) + len(to_lines_2)) * (FS_TO * LEADING)
-
     top_block_h = to_header_h + to_text_h
 
+    # ITEM
+    item_h = FS_ITEM * LEADING
 
-    # ============================================================
-    # 2) MEASURE BOTTOM BLOCK (FROM header + FROM text)
-    # ============================================================
+    # FROM
     from_header_h = FS_LABEL * LEADING
     from_lines = wrap(from_text, FONT_REG, FS_FROM, w)
     from_text_h = len(from_lines) * (FS_FROM * LEADING)
     bottom_block_h = from_header_h + from_text_h
 
+    # AVAILABLE HEIGHT = top half (with padding at both ends)
+    top_half_top    = PAGE_H - PAD
+    top_half_bottom = PAGE_H/2 + PAD
+    avail = top_half_top - top_half_bottom  # = PAGE_H/2 - 2*PAD
 
-    # ============================================================
-    # 3) DETERMINE AVAILABLE MIDDLE HEIGHT
-    #    (for item + divider + spacing around them)
-    # ============================================================
-    used_top = top_block_h
-    used_bottom = bottom_block_h
-    free_middle = PAGE_H - 2*PAD - used_top - used_bottom
+    # Remaining space for vertical gaps (before item, around divider, before FROM)
+    # We use 3 gaps: g1 (after TO), g2a (before divider), g2b (after divider), g3 (before FROM)
+    # Start with equal distribution; clamp at zero if tight.
+    fixed_h = top_block_h + item_h + bottom_block_h  # divider line ~ 0 height
+    rem = max(0, avail - fixed_h)
+    g1 = g2a = g2b = g3 = rem / 4.0
 
-    # middle padding top/bottom
-    mid_pad = free_middle * 0.3
-    # item block
-    item_h = FS_ITEM * LEADING
-    # divider line spacing
-    divider_pad = free_middle * 0.10
+    # ---------- DRAW IN TOP HALF ----------
+    y = top_half_top
 
-    # Y start for drawing
-    y = PAGE_H - PAD
-
-    # ============================================================
-    # DRAW — TOP BLOCK
-    # ============================================================
-    # "To:"
+    # TO header
     c.setFont(FONT_BOLD, FS_LABEL)
     c.drawString(x, y - FS_LABEL, "To:")
     y -= to_header_h
@@ -192,38 +179,33 @@ def draw_label(c, to_raw, from_text, item_text):
     if structured:
         y = draw_left(c, x, y, w, structured, FS_TO)
 
-    # Middle padding before item
-    y -= mid_pad
+    # gap after TO
+    y -= g1
 
-
-    # ============================================================
-    # DRAW — ITEM
-    # ============================================================
+    # ITEM
     y = draw_left(c, x, y, w, item_text, FS_ITEM)
 
-    # spacing to divider
-    y -= divider_pad
+    # gap to divider
+    y -= g2a
 
-    # divider line
+    # divider
     c.setLineWidth(DIVIDER_PT)
     c.line(x, y, x + w, y)
-    y -= divider_pad
 
+    # gap after divider
+    y -= g2b
 
-    # ============================================================
-    # DRAW — BOTTOM BLOCK (FROM aligned to bottom)
-    # ============================================================
-    # bottom anchor
-    # yf = PAD + bottom_block_h
-    yf = PAD + bottom_block_h + 0.1*inch
+    # FROM block anchored so its bottom sits at or above the midline boundary
+    # Compute baseline for FROM block top
+    yf = top_half_bottom + bottom_block_h
 
-    # "From:"
+    # "From:" (right-aligned)
     c.setFont(FONT_BOLD, FS_LABEL)
     lab_w = pdfmetrics.stringWidth("From:", FONT_BOLD, FS_LABEL)
     c.drawString(x + w - lab_w, yf - FS_LABEL, "From:")
     yf -= from_header_h
 
-    # FROM text
+    # FROM text (right-aligned)
     draw_right(c, x, yf, w, from_text, FS_FROM)
 
 # --- public API ---
