@@ -9,7 +9,7 @@ from labels import fetch_address
 
 # --- CONSTANTS ---
 FROM_ADDRESS = (
-    "Satlok Ashram, Satlok Naamdeen Centre, 62, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India, 8884445281"
+    "Satlok Ashram, Satlok Naamdeen Centre, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India, 8884445281"
 )
 
 PAGE_W, PAGE_H = 4 * inch, 3 * inch
