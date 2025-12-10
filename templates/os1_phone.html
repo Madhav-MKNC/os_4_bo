@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
         <style>
             body {
                 background: radial-gradient(
@@ -180,6 +182,103 @@
                 }
                 .row {
                     grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 400px) {
+                html,
+                body {
+                    height: 100%;
+                }
+
+                /* use flex on the page so content flows naturally on small screens */
+                body {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+                    justify-content: flex-start;
+                    margin: 30px 10px !important; /* shrink huge margins */
+                }
+
+                /* keep your form but adapt sizing for phone */
+                form {
+                    display: flex; /* already flex, keep it explicit */
+                    flex-direction: column;
+                    gap: 16px !important;
+                    margin: 0 auto !important;
+                    width: 100% !important;
+                    max-width: 520px; /* readable width on phones */
+                    padding: 20px 14px !important;
+                    border-radius: 12px;
+                }
+
+                /* switch the 2-col grid rows to flex column on phones */
+                .row {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 14px !important;
+                }
+
+                /* make groups flex containers so inner items wrap nicely */
+                .group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    padding: 14px !important;
+                    border-radius: 8px;
+                }
+
+                .options {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                }
+
+                h2 {
+                    font-size: 22px !important;
+                    margin-bottom: 24px !important;
+                }
+
+                input[type="file"] {
+                    width: 100%;
+                    font-size: 14px !important;
+                    padding: 10px !important;
+                    border-radius: 8px;
+                }
+
+                input[type="file"]::-webkit-file-upload-button {
+                    padding: 10px 12px;
+                    font-size: 14px;
+                    border-radius: 6px;
+                }
+
+                button {
+                    width: 100% !important;
+                    padding: 14px !important;
+                    font-size: 16px !important;
+                    border-radius: 10px;
+                }
+
+                .loader {
+                    width: 80px;
+                    height: 80px;
+                }
+                .glow-text {
+                    font-size: 16px;
+                }
+            }
+
+            /* very small screens */
+            @media (max-width: 380px) {
+                body {
+                    margin: 20px 8px !important;
+                }
+                form {
+                    padding: 16px 12px !important;
+                }
+                button {
+                    padding: 13px !important;
+                    font-size: 15px !important;
                 }
             }
         </style>
