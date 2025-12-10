@@ -3,80 +3,99 @@
     <head>
         <style>
             body {
-                background: black;
-                color: #00ffcc;
+                background: radial-gradient(
+                    circle at center,
+                    #000 60%,
+                    #001a14
+                );
+                color: #d3fff5;
                 font-family: "Courier New", monospace;
                 text-align: center;
                 margin: 100px 20px;
             }
+
             h2 {
                 font-size: 28px;
-                text-shadow: 0 0 15px #00ffcc;
-                margin-bottom: 40px;
+                text-shadow: 0 0 20px #00ffc8, 0 0 45px #00a88a;
+                margin-bottom: 45px;
+                color: #9ffff0;
             }
+
             .file-list {
                 display: inline-block;
                 text-align: left;
-                border: 1px solid #00ffcc;
-                border-radius: 10px;
-                padding: 20px 40px;
-                background: rgba(0, 255, 204, 0.05);
-                box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+                padding: 30px 40px;
+                background: rgba(0, 255, 204, 0.06);
+                border-radius: 14px;
+                box-shadow: 0 0 40px #00ffcc22;
                 max-width: 90vw;
-                word-wrap: break-word;
+                margin: 0 auto;
+                margin-bottom: 40px;
             }
-            .file-list a {
-                text-decoration: none;
-                display: block;
-                margin: 10px 0;
-                transition: all 0.2s ease;
+
+            .file-list p {
+                font-size: 18px;
+                margin-bottom: 25px;
+                color: #00ffcc;
                 font-weight: bold;
-                color: inherit; /* Ensure links inherit the parent color */
-                outline: none; /* Remove outline on focus */
-                background: transparent; /* Remove any background highlight */
-                border: none; /* Remove border if there is any */
+                text-shadow: 0 0 10px #00ffcc;
             }
-            .valid {
-                color: #00ff88;
+
+            .file-list a {
+                display: block;
+                margin: 12px 0;
+                padding: 12px 18px;
+                border: 2px solid #00ffcc55;
+                border-radius: 8px;
+                background: rgba(0, 255, 204, 0.1);
+                color: #00ffcc;
+                font-weight: bold;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                text-align: center;
             }
-            .invalid {
-                color: #ff3366;
-            }
-            .failed {
-                color: #ffcc00;
-            }
+
             .file-list a:hover {
                 color: #ffffff;
+                background: rgba(0, 255, 204, 0.3);
                 text-shadow: 0 0 10px #00ffcc;
-                transform: scale(1.03);
+                transform: scale(1.05);
             }
-            .file-list a:focus,
-            .file-list a:active {
-                color: inherit !important; /* Ensure no color change */
-                text-shadow: none !important; /* Remove any text-shadow */
-                transform: none !important; /* Prevent scaling on click */
-                background: transparent !important; /* Remove background highlight */
-                outline: none !important; /* Ensure no outline */
-                border: none !important; /* Remove border if it's applied */
+
+            .valid {
+                border-color: #00ff88;
             }
+
+            .invalid {
+                border-color: #ff3366;
+            }
+
+            .failed {
+                border-color: #ffcc00;
+            }
+
             .back {
                 display: inline-block;
                 margin-top: 40px;
                 color: #00ffcc;
                 text-decoration: none;
                 border: 1px solid #00ffcc;
-                padding: 8px 16px;
-                border-radius: 6px;
-                transition: 0.2s;
+                padding: 12px 24px;
+                border-radius: 8px;
+                transition: 0.3s;
+                font-weight: bold;
             }
+
             .back:hover {
                 background: #00ffcc;
                 color: black;
                 box-shadow: 0 0 15px #00ffcc;
             }
+
             .pulse {
                 animation: pulse 1.5s infinite alternate;
             }
+
             @keyframes pulse {
                 from {
                     opacity: 1;
@@ -85,6 +104,7 @@
                     opacity: 0.5;
                 }
             }
+
             @media (max-width: 600px) {
                 body {
                     margin-top: 60px;
@@ -95,16 +115,16 @@
                     margin-bottom: 25px;
                 }
                 .file-list {
-                    padding: 15px 20px;
-                    border-radius: 8px;
+                    padding: 20px 25px;
+                    border-radius: 12px;
                 }
                 .file-list a {
                     font-size: 14px;
+                    padding: 10px 16px;
                     margin: 8px 0;
-                    word-break: break-all;
                 }
                 .back {
-                    padding: 6px 12px;
+                    padding: 8px 16px;
                     font-size: 14px;
                 }
             }
