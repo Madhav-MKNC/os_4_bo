@@ -1,0 +1,12 @@
+.env
+
+__pycache__/
+
+*.pyc
+*.pyo
+
+output_dir
+phone_number_lookup.txt
+whatsapp.txt
+tmp
+input_dir
