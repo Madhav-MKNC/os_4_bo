@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: radial-gradient(
+                    circle at center,
+                    #000 60%,
+                    #001a14
+                );
+                color: #d3fff5;
+                font-family: "Courier New", monospace;
+                text-align: center;
+                margin: 100px 20px;
+            }
+
+            h2 {
+                font-size: 28px;
+                text-shadow: 0 0 20px #00ffc8, 0 0 45px #00a88a;
+                margin-bottom: 45px;
+                color: #9ffff0;
+            }
+
+            form {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                background: rgba(0, 255, 204, 0.06);
+                border: 1px solid #00ffcc55;
+                border-radius: 14px;
+                padding: 38px 55px;
+                box-shadow: 0 0 40px #00ffcc22;
+                margin-inline: 20%;
+                gap: 24px;
+                transition: 0.3s;
+            }
+            form:hover {
+                box-shadow: 0 0 50px #00ffcc55;
+                border-color: #00ffd0aa;
+            }
+
+            /* 2-col rows for desktop, stack on mobile */
+            .row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 18px 24px;
+            }
+
+            .group {
+                text-align: left;
+                border-radius: 10px;
+                padding: 18px 20px;
+                background: rgba(0, 255, 170, 0.07);
+                border: 1px solid #00ffb366;
+                box-shadow: 0 0 8px #00ffb122 inset;
+            }
+            .group.mode {
+                border-color: #00e0ff66;
+                background: rgba(0, 180, 255, 0.07);
+            }
+            .group.sort {
+                border-color: #ffdd0066;
+                background: rgba(255, 220, 0, 0.07);
+            }
+            .group.lookup {
+                border-color: #ff66a866;
+                background: rgba(255, 60, 150, 0.08);
+            }
+            .group.mainfile {
+                border-color: #7bff6266;
+                background: rgba(100, 255, 100, 0.08);
+            }
+
+            .group-label {
+                font-size: 15px;
+                font-weight: bold;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 8px;
+                display: block;
+                color: #c6fff6;
+                text-shadow: 0 0 10px #00ffe277;
+            }
+
+            .options label {
+                display: block;
+                margin: 6px 0;
+                cursor: pointer;
+                color: #eafffb;
+            }
+
+            input[type="file"] {
+                color: #affff7;
+                background: rgba(0, 0, 0, 0.2);
+                border: 1px solid #00ffcc77;
+                padding: 10px;
+                border-radius: 6px;
+                font-size: 14px;
+                cursor: pointer;
+                width: 100%;
+                transition: 0.3s ease;
+                text-align: center;
+            }
+            input[type="file"]::-webkit-file-upload-button {
+                background: #00ffcc11;
+                color: #00ffe0;
+                border: 1px solid #00ffd477;
+                border-radius: 4px;
+                padding: 6px 12px;
+                cursor: pointer;
+                transition: 0.3s ease;
+            }
+            input[type="file"]::-webkit-file-upload-button:hover {
+                background: #00ffcc33;
+            }
+
+            .hint {
+                font-size: 12px;
+                opacity: 0.75;
+                margin-top: 6px;
+            }
+
+            button {
+                padding: 12px 26px;
+                border: none;
+                border-radius: 8px;
+                background: #00ffcc33;
+                color: #affff7;
+                font-size: 16px;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: 0.3s ease;
+                text-transform: uppercase;
+            }
+            button:hover {
+                background: #00ffcc66;
+                box-shadow: 0 0 20px #00ffcc88;
+                color: #001a14;
+            }
+
+            .loading-container {
+                display: none;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            .loader {
+                width: 120px;
+                height: 120px;
+                border: 3px solid #00ffcc;
+                border-top-color: transparent;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .glow-text {
+                font-size: 18px;
+                text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+                animation: flicker 1.5s infinite alternate;
+            }
+            @keyframes flicker {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0.4;
+                }
+            }
+
+            @media (max-width: 900px) {
+                form {
+                    margin-inline: 5%;
+                    padding: 28px 22px;
+                }
+                .row {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <script>
+            function showLoading() {
+                document.querySelector("form").style.display = "none";
+                document.querySelector(".loading-container").style.display =
+                    "flex";
+            }
+        </script>
+    </head>
+
+    <body>
+        <h2>OS-1 Address Processor</h2>
+
+        <form
+            action="{{ url_for('os1_phone') }}"
+            method="post"
+            enctype="multipart/form-data"
+            onsubmit="showLoading()"
+        >
+            <!-- flags + sorting side-by-side -->
+            <div class="row">
+                <div class="group mode">
+                    <span class="group-label">Mode</span>
+                    <div class="options">
+                        <label
+                            ><input
+                                type="radio"
+                                name="flag"
+                                value="-m"
+                                required
+                            />
+                            -m (modified)</label
+                        >
+                        <label
+                            ><input type="radio" name="flag" value="-n" /> -n
+                            (name)</label
+                        >
+                    </div>
+                </div>
+
+                <div class="group sort">
+                    <span class="group-label">Sorting</span>
+                    <div class="options">
+                        <label
+                            ><input
+                                type="radio"
+                                name="enable_sorting"
+                                value="on"
+                                checked
+                            />
+                            Enable sorting</label
+                        >
+                        <label
+                            ><input
+                                type="radio"
+                                name="enable_sorting"
+                                value="off"
+                            />
+                            Disable sorting</label
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- uploads side-by-side -->
+            <div class="row">
+                <div class="group lookup">
+                    <span class="group-label">Optional Lookup File</span>
+                    <input type="file" name="phone_lookup" accept=".txt" />
+                    <div class="hint">
+                        Must be exactly <code>phone_number_lookup.txt</code>
+                    </div>
+                </div>
+
+                <div class="group mainfile">
+                    <span class="group-label">Main Input (.txt)</span>
+                    <input
+                        type="file"
+                        name="main_file"
+                        accept=".txt"
+                        required
+                    />
+                    <div class="hint">Text file only</div>
+                </div>
+            </div>
+
+            <button type="submit">Run</button>
+        </form>
+
+        <div class="loading-container">
+            <div class="loader"></div>
+            <div class="glow-text">Booting OS-1 Parser...</div>
+            <div class="glow-text" style="animation-delay: 0.3s">
+                Indexing Lookup Database...
+            </div>
+            <div class="glow-text" style="animation-delay: 0.6s">
+                Processing Raw Addresses...
+            </div>
+            <div class="glow-text" style="animation-delay: 0.9s">
+                Generating Export Files...
+            </div>
+        </div>
+    </body>
+</html>

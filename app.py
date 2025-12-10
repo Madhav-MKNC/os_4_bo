@@ -1,5 +1,13 @@
 from flask import Flask, render_template, request, send_from_directory, redirect, url_for
 import os
+from pathlib import Path
+import shutil
+
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'os_1_parser')))
+
+from os_1_parser.main import utils, ms_office, process_addresses, phone_number_lookup
+
 from processing import process_files
 from pre_processing import process_excel_file  # first step
 from labels.make_labels import generate_label_pdf 
@@ -106,6 +114,69 @@ def generate_labels():
             return f"Error generating labels: {e}", 500
 
     return render_template("generate_labels.html")
+
+
+"""
+os_1_parser below
+"""
+
+def _run_text_to_xlsx_with_flags(flag: str, text_path: str, out_dir: str, enable_sorting: bool | None, verbose: bool) -> str:
+    file_text = utils.read_input_file(text_path)
+    address_list = process_addresses(file_text, flag=flag, verbose_mode=verbose, enable_sorting=enable_sorting)
+    out_xlsx = utils.generate_output_file_path(out_dir, Path(text_path).stem, "xlsx")
+    ms_office.export_to_MS_Excel_using_xlsxwriter(address_list=address_list, file_name=out_xlsx)
+    return out_xlsx
+
+
+def write_lookup_file(output_folder):
+    """Creates phone_number_lookup.txt from phone_number_lookup.numbers."""
+    filepath = Path(output_folder) / "phone_number_lookup.txt"
+    numbers = list(map(str, phone_number_lookup.numbers))
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write("\n".join(numbers))
+
+    return filepath
+
+
+@app.route("/os1_phone", methods=["GET", "POST"])
+def os1_phone():
+    if request.method == "POST":
+        flag = request.form.get("flag")
+        if flag not in ["-f", "-m"]:
+            return "Invalid flag", 400
+
+        sort_choice = request.form.get("enable_sorting")
+        enable_sorting = True if sort_choice == "on" else False
+        verbose = request.form.get("verbose") == "on"
+
+        # required main input (.txt)
+        main_file = request.files.get("main_file")
+        if not main_file or not main_file.filename.endswith(".txt"):
+            return "Upload a .txt main file", 400
+
+        main_path = os.path.join(UPLOAD_FOLDER, main_file.filename)
+        main_file.save(main_path)
+
+        try:
+            out_xlsx = _run_text_to_xlsx_with_flags(
+                flag=flag,
+                text_path=main_path,
+                out_dir=OUTPUT_FOLDER,
+                enable_sorting=enable_sorting,
+                verbose=verbose
+            )
+
+            # always (re)create lookup from in-memory numbers
+            lookup_path = write_lookup_file(OUTPUT_FOLDER)
+
+            files = [os.path.basename(out_xlsx), lookup_path.name]
+            return redirect(url_for("show_results", files=",".join(files)))
+
+        except Exception as e:
+            return f"Error: {e}", 500
+
+    return render_template("os1_phone.html")
 
 
 if __name__ == "__main__":
