@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=0.9, viewport-fit=cover"
+        />
 
         <style>
             body {
@@ -99,7 +102,7 @@
                 border-radius: 6px;
                 font-size: 14px;
                 cursor: pointer;
-                width: 100%;
+                width: 90%;
                 transition: 0.3s ease;
                 text-align: center;
             }
@@ -197,7 +200,7 @@
                     flex-direction: column;
                     align-items: stretch;
                     justify-content: flex-start;
-                    margin: 30px 10px !important; /* shrink huge margins */
+                    margin: 10%;
                 }
 
                 /* keep your form but adapt sizing for phone */
@@ -240,7 +243,7 @@
                 }
 
                 input[type="file"] {
-                    width: 100%;
+                    width: 90%;
                     font-size: 14px !important;
                     padding: 10px !important;
                     border-radius: 8px;
@@ -293,7 +296,7 @@
     </head>
 
     <body>
-        <h2>OS-1 Address Processor</h2>
+        <h2>Address Processor</h2>
 
         <form
             action="{{ url_for('os1_phone') }}"
@@ -305,44 +308,42 @@
             <div class="row">
                 <div class="group mode">
                     <span class="group-label">Mode</span>
-                    <div class="options">
-                        <label
-                            ><input
-                                type="radio"
-                                name="flag"
-                                value="-m"
-                                required
-                            />
-                            -m (modified file)</label
-                        >
-                        <label
-                            ><input type="radio" name="flag" value="-f" /> -f
-                            (normal file)</label
-                        >
-                    </div>
+                    <select
+                        name="flag"
+                        required
+                        style="
+                            padding: 10px;
+                            border-radius: 6px;
+                            background: #001a1a;
+                            color: #9ffff0;
+                            border: 1px solid #00e0ff66;
+                            width: 95%;
+                            font-size: 15px;
+                        "
+                    >
+                        <option value="-m">modified file (-m)</option>
+                        <option value="-f">normal file (-f)</option>
+                    </select>
                 </div>
 
                 <div class="group sort">
                     <span class="group-label">Sorting</span>
-                    <div class="options">
-                        <label
-                            ><input
-                                type="radio"
-                                name="enable_sorting"
-                                value="on"
-                                checked
-                            />
-                            Enable sorting</label
-                        >
-                        <label
-                            ><input
-                                type="radio"
-                                name="enable_sorting"
-                                value="off"
-                            />
-                            Disable sorting</label
-                        >
-                    </div>
+                    <select
+                        name="enable_sorting"
+                        required
+                        style="
+                            padding: 10px;
+                            border-radius: 6px;
+                            background: #1a1a00;
+                            color: #fff7b0;
+                            border: 1px solid #ffdd0066;
+                            width: 95%;
+                            font-size: 15px;
+                        "
+                    >
+                        <option value="on">Enable sorting</option>
+                        <option value="off">Disable sorting</option>
+                    </select>
                 </div>
             </div>
 
@@ -351,9 +352,7 @@
                 <div class="group lookup">
                     <span class="group-label">Optional Lookup File</span>
                     <input type="file" name="phone_lookup" accept=".txt" />
-                    <div class="hint">
-                        Must be exactly <code>phone_number_lookup.txt</code>
-                    </div>
+                    <div class="hint">phone_number_lookup file</div>
                 </div>
 
                 <div class="group mainfile">
@@ -373,7 +372,7 @@
 
         <div class="loading-container">
             <div class="loader"></div>
-            <div class="glow-text">Booting OS-1 Parser...</div>
+            <div class="glow-text">Booting os_1_parser...</div>
             <div class="glow-text" style="animation-delay: 0.3s">
                 Indexing Lookup Database...
             </div>

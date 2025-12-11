@@ -120,9 +120,11 @@ def generate_labels():
 os_1_parser below
 """
 
-def _run_text_to_xlsx_with_flags(flag: str, text_path: str, out_dir: str, enable_sorting: bool | None, verbose: bool) -> str:
+def _run_text_to_xlsx_with_flags(flag: str, text_path: str, out_dir: str, enable_sorting: bool | None, lookup_numbers: list) -> str:
+    phone_number_lookup.numbers = lookup_numbers
+
     file_text = utils.read_input_file(text_path)
-    address_list = process_addresses(file_text, flag=flag, verbose_mode=verbose, enable_sorting=enable_sorting)
+    address_list = process_addresses(file_text, flag=flag, enable_sorting=enable_sorting)
     out_xlsx = utils.generate_output_file_path(out_dir, Path(text_path).stem, "xlsx")
     ms_office.export_to_MS_Excel_using_xlsxwriter(address_list=address_list, file_name=out_xlsx)
     return out_xlsx
@@ -148,7 +150,6 @@ def os1_phone():
 
         sort_choice = request.form.get("enable_sorting")
         enable_sorting = True if sort_choice == "on" else False
-        verbose = request.form.get("verbose") == "on"
 
         # required main input (.txt)
         main_file = request.files.get("main_file")
@@ -163,8 +164,7 @@ def os1_phone():
                 flag=flag,
                 text_path=main_path,
                 out_dir=OUTPUT_FOLDER,
-                enable_sorting=enable_sorting,
-                verbose=verbose
+                enable_sorting=enable_sorting
             )
 
             # always (re)create lookup from in-memory numbers
