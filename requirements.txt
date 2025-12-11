@@ -10,3 +10,5 @@ xlsxwriter
 openpyxl
 googletrans==4.0.0-rc1
 xlsxwriter==3.1.2
+
+python-dotenv==1.2.1
