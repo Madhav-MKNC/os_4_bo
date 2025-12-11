@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, send_from_directory, redirect
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'os_1_parser')))
 
