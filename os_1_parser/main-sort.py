@@ -95,12 +95,12 @@ def get_address_list(chat_log: str, flag='-f') -> list:
             address_list.append(address_obj)
     
     print(f"{GREEN}*** Total addresses found: [{len(address_list)}]{RESET}")
-    if not os.path.exists('tmp'): os.makedirs('tmp')
-    with open('tmp/addresses_fetched.txt', 'w', encoding='utf-8') as file:
-        addresses_fetched = ""
-        for i in address_list:
-            addresses_fetched += "\n\n" + str(i.address) + "\n\n"
-        file.write(addresses_fetched.strip())
+    # if not os.path.exists('tmp'): os.makedirs('tmp')
+    # with open('tmp/addresses_fetched.txt', 'w', encoding='utf-8') as file:
+    #     addresses_fetched = ""
+    #     for i in address_list:
+    #         addresses_fetched += "\n\n" + str(i.address) + "\n\n"
+    #     file.write(addresses_fetched.strip())
 
     return address_list
 
@@ -177,11 +177,12 @@ def process_addresses(file_text, flag='-f', verbose_mode=False, enable_sorting=T
 
     with Executor(max_workers=max_workers) as ex:
         futs = [ex.submit(_process_one_address, ao, flag) for ao in address_list]
+        BATCH_SIZE = 200
         for i, fut in enumerate(as_completed(futs), 1):
             res = fut.result()
             if res is not None:
                 address_obj_list.append(res)
-            if not verbose_mode and (i % 1000 == 0 or i == total):
+            if not verbose_mode and (i % BATCH_SIZE == 0 or i == total or i==0):
                 progress = (i / total) * 100
                 filled = int(progress // 2)
                 bar = '█' * filled + '-' * (50 - filled)
@@ -282,27 +283,27 @@ def main():
         address_list = process_addresses(file_text, verbose_mode=verbose_mode)
 
         output_file_path_xls = utils.generate_output_file_path(output_dir, Path(fname).stem, "xlsx")
-        ms_office.export_to_MS_Excel_using_xlsxwriter(address_list=address_list, file_name=output_file_path_xls)
+        ms_office.export_to_MS_Excel(address_list=address_list, file_name=output_file_path_xls)
     
     elif flag in ['-t', '-translate', '--t', '--translate']:
         file_text = utils.read_input_file(fname)
         address_list = process_addresses(file_text, flag=flag, verbose_mode=verbose_mode)
 
         output_file_path_xls = utils.generate_output_file_path(output_dir, Path(fname).stem, "xlsx")
-        ms_office.export_to_MS_Excel_using_xlsxwriter(address_list=address_list, file_name=output_file_path_xls)
+        ms_office.export_to_MS_Excel(address_list=address_list, file_name=output_file_path_xls)
 
     elif flag in ['-n', '-name', '--n', '--name']:
         address_list = ms_office.import_from_Excel_sheet(fname)
         for address in address_list:
             utils.update_address_name(address)
-        ms_office.export_to_MS_Excel_using_xlsxwriter(address_list, str(fname.split(".")[0] + "_name.xls"))
+        ms_office.export_to_MS_Excel(address_list, str(fname.split(".")[0] + "_name.xls"))
     
     elif flag in ['-m', '-modified', '-modify', '--m', '--modified', '--modify', '-mod', '--mod']:
         file_text = utils.read_input_file(fname)
         address_list = process_addresses(file_text, flag='-m', verbose_mode=verbose_mode)
 
         output_file_path_xls = utils.generate_output_file_path(output_dir, Path(fname).stem, "xlsx")
-        ms_office.export_to_MS_Excel_using_xlsxwriter(address_list=address_list, file_name=output_file_path_xls)
+        ms_office.export_to_MS_Excel(address_list=address_list, file_name=output_file_path_xls)
 
     else:
         print(f"{RED}[!] Invalid argument{RESET}")
