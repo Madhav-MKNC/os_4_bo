@@ -148,7 +148,7 @@ def load_lookup_from_upload(file_storage) -> list[int]:
 def write_lookup_file(output_folder):
     """Creates phone_number_lookup.txt from phone_number_lookup.numbers."""
     filepath = Path(output_folder) / "phone_number_lookup.txt"
-    numbers = list(map(str, phone_number_lookup.numbers))
+    numbers = list(map(str, phone_number_lookup.new_numbers))
 
     with open(filepath, "w", encoding="utf-8") as f:
         f.write("\n".join(numbers))

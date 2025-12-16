@@ -177,7 +177,7 @@ def process_addresses(file_text, flag='-f', verbose_mode=False, enable_sorting=N
 
     with Executor(max_workers=max_workers) as ex:
         futs = [ex.submit(_process_one_address, ao, flag) for ao in address_list]
-        BATCH_SIZE = 200
+        BATCH_SIZE = 2000
         for i, fut in enumerate(as_completed(futs), 1):
             res = fut.result()
             if res is not None:
@@ -316,4 +316,4 @@ if __name__ == "__main__":
     start = now()
     main()
     etime = now() - start
-    print(f"\n\nFull Execution Time: {etime//60} mins {etime%60} seconds.")
+    print(f"Full Execution Time: {etime//60} mins {etime%60} seconds.")
