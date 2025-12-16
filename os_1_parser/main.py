@@ -168,12 +168,12 @@ def process_addresses(file_text, flag='-f', verbose_mode=False, enable_sorting=N
     
     # Check if running locally (speed) or on Render (memory safety)
     is_local = os.getenv('NOT_RUNNING_ON_RENDER', 'yes').lower() in ['yes', 'true', '1']
-    if is_local:
-        Executor = ProcessPoolExecutor
-        max_workers = os.cpu_count() or 4
-    else:
-        Executor = ThreadPoolExecutor
-        max_workers = min(32, (os.cpu_count() or 4))
+    # if is_local:
+    Executor = ProcessPoolExecutor
+    max_workers = os.cpu_count() or 4
+    # else:
+    #     Executor = ThreadPoolExecutor
+    #     max_workers = min(32, (os.cpu_count() or 4))
 
     with Executor(max_workers=max_workers) as ex:
         futs = [ex.submit(_process_one_address, ao, flag) for ao in address_list]
