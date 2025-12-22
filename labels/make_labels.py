@@ -199,14 +199,8 @@ def draw_label(c, to_raw, from_text, item_text, barcode_text):
     # DRAW — ITEM
     # ============================================================
 
-    # Calculate barcode position (right aligned)
-    barcode_text_width = pdfmetrics.stringWidth(barcode_text, FONT_REG, FS_ITEM)
-    barcode_x = x + w - barcode_text_width
-
     # Calculate the width of the item text (book name)
     item_text_width = pdfmetrics.stringWidth(item_text, FONT_REG, FS_ITEM)
-    max_item_width = barcode_x - (x + 2) - 10
-    item_text_width = min(item_text_width, max_item_width)
 
     # Calculate the height of the item text (same as before)
     item_lines = wrap(item_text, FONT_REG, FS_ITEM, w)
@@ -228,10 +222,6 @@ def draw_label(c, to_raw, from_text, item_text, barcode_text):
     # y = draw_left(c, x, y, w, item_text, FS_ITEM)
     y = draw_left(c, x + 2, y, w, item_text, FS_ITEM)  # Adjust x by adding the same margin (2)
 
-    # Draw barcode text on the right
-    c.setFont(FONT_REG, FS_ITEM)
-    c.drawString(barcode_x, y - FS_ITEM, barcode_text)
-
     # spacing to next block (divider) removed, as we're using a box now
 
     # ============================================================
@@ -239,7 +229,7 @@ def draw_label(c, to_raw, from_text, item_text, barcode_text):
     # ============================================================
     # bottom anchor
     # yf = PAD + bottom_block_h
-    yf = PAD + bottom_block_h
+    yf = PAD + bottom_block_h + 0.2*inch 
 
     # "From:"
     c.setFont(FONT_BOLD, FS_LABEL)
@@ -249,6 +239,14 @@ def draw_label(c, to_raw, from_text, item_text, barcode_text):
 
     # FROM text
     draw_right(c, x, yf, w, from_text, FS_FROM)
+
+    # Draw barcode text below FROM (small, grey, low priority)
+    barcode_fs = FS_FROM - 3
+    c.setFont(FONT_REG, barcode_fs)
+    c.setFillColorRGB(0.65, 0.65, 0.65)
+    barcode_w = pdfmetrics.stringWidth(barcode_text, FONT_REG, barcode_fs)
+    c.drawString(x + w - barcode_w, PAD + 4, barcode_text)
+    c.setFillColorRGB(0, 0, 0)
 
 # --- public API ---
 def generate_label_pdf(input_path, output_folder, barcode_csv_path):
@@ -268,7 +266,7 @@ def generate_label_pdf(input_path, output_folder, barcode_csv_path):
     base = os.path.splitext(os.path.basename(input_path))[0]
     out_name = f"LABELS_{base}.pdf"
     out_path = os.path.join(output_folder, out_name)
-    out_with_barcodes_name = f"{base}_WITH_BARCODES.csv"
+    out_with_barcodes_name = f"POST_OFFICE_{base}.csv"
     out_with_barcodes_path = os.path.join(output_folder, out_with_barcodes_name)
 
     c = canvas.Canvas(out_path, pagesize=(PAGE_W, PAGE_H))
