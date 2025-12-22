@@ -243,7 +243,6 @@ def draw_label(c, to_raw, from_text, item_text, barcode_text):
     # Draw barcode text below FROM (small, grey, low priority)
     barcode_fs = FS_FROM - 3
     c.setFont(FONT_REG, barcode_fs)
-    c.setFillColorRGB(0.65, 0.65, 0.65)
     barcode_w = pdfmetrics.stringWidth(barcode_text, FONT_REG, barcode_fs)
     c.drawString(x + w - barcode_w, PAD + 4, barcode_text)
     c.setFillColorRGB(0, 0, 0)
