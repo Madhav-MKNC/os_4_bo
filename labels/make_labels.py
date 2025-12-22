@@ -9,7 +9,7 @@ from labels import fetch_address
 
 # --- CONSTANTS ---
 FROM_ADDRESS = (
-    "Satlok Ashram, Satlok Naamdeen Centre, Marasandra Doddaballapur Main Road Bangalore Rural, Karnataka 562163, India, 8884445281"
+    "Satlok Naamdaan Centre, Marasandra Doddaballapur Bangalore, Karnataka 562163, 8884445281"
 )
 
 PAGE_W, PAGE_H = 4 * inch, 3 * inch
@@ -170,7 +170,7 @@ def draw_label(c, to_raw, from_text, item_text):
     free_middle = PAGE_H - 2*PAD - used_top - used_bottom
 
     # middle padding top/bottom
-    mid_pad = free_middle * 0.3
+    mid_pad = free_middle * 0.2
     # item block
     item_h = FS_ITEM * LEADING
     # divider line spacing
@@ -199,23 +199,38 @@ def draw_label(c, to_raw, from_text, item_text):
     # ============================================================
     # DRAW — ITEM
     # ============================================================
-    y = draw_left(c, x, y, w, item_text, FS_ITEM)
 
-    # spacing to divider
-    y -= divider_pad
+    # Calculate the width of the item text (book name)
+    item_text_width = pdfmetrics.stringWidth(item_text, FONT_REG, FS_ITEM)
 
-    # divider line
-    c.setLineWidth(DIVIDER_PT)
-    c.line(x, y, x + w, y)
-    y -= divider_pad
+    # Calculate the height of the item text (same as before)
+    item_lines = wrap(item_text, FONT_REG, FS_ITEM, w)
+    item_height = len(item_lines) * (FS_ITEM * LEADING)
 
+    # Add some padding around the box
+    box_padding = 5  # Padding inside the box around the item text
+    box_y_start = y - item_height - box_padding
+    box_y_end = y + box_padding
+
+    # Draw the rectangle (box) around the item text
+    # Only the width of the item text is considered, not the full label width
+    c.setLineWidth(1)
+    # c.rect(x - box_padding, box_y_start, item_text_width + 2 * box_padding, item_height + 2 * box_padding)
+    # c.rect(x + 2, box_y_start, item_text_width + 2 * box_padding, item_height + 2 * box_padding)
+    c.rect(x + 2 - box_padding, box_y_start, item_text_width + 2 * box_padding, item_height + 2 * box_padding)
+
+    # Draw the actual item text inside the box
+    # y = draw_left(c, x, y, w, item_text, FS_ITEM)
+    y = draw_left(c, x + 2, y, w, item_text, FS_ITEM)  # Adjust x by adding the same margin (2)
+
+    # spacing to next block (divider) removed, as we're using a box now
 
     # ============================================================
     # DRAW — BOTTOM BLOCK (FROM aligned to bottom)
     # ============================================================
     # bottom anchor
     # yf = PAD + bottom_block_h
-    yf = PAD + bottom_block_h + 0.1*inch
+    yf = PAD + bottom_block_h
 
     # "From:"
     c.setFont(FONT_BOLD, FS_LABEL)
