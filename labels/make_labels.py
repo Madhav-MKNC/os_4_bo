@@ -5,12 +5,11 @@ from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 
 # data loader
-from labels import fetch_address
+from labels import fetch_address, barcodes
 
 # --- CONSTANTS ---
-FROM_ADDRESS = (
-    "Satlok Naamdaan Centre, Marasandra Doddaballapur Bangalore, Karnataka 562163, 8884445281"
-)
+from labels import constants
+FROM_ADDRESS = constants.FROM_ADDRESS
 
 PAGE_W, PAGE_H = 4 * inch, 3 * inch
 PAD = 0.20 * inch
@@ -128,7 +127,7 @@ def draw_right(c, x, y, w, text, size):
     return y
 
 # --- draw one label exactly like the screenshot ---
-def draw_label(c, to_raw, from_text, item_text):
+def draw_label(c, to_raw, from_text, item_text, barcode_text):
     # border
     c.setLineWidth(BORDER_PT)
     c.rect(BORDER_PT/2, BORDER_PT/2, PAGE_W - BORDER_PT, PAGE_H - BORDER_PT)
@@ -200,8 +199,14 @@ def draw_label(c, to_raw, from_text, item_text):
     # DRAW — ITEM
     # ============================================================
 
+    # Calculate barcode position (right aligned)
+    barcode_text_width = pdfmetrics.stringWidth(barcode_text, FONT_REG, FS_ITEM)
+    barcode_x = x + w - barcode_text_width
+
     # Calculate the width of the item text (book name)
     item_text_width = pdfmetrics.stringWidth(item_text, FONT_REG, FS_ITEM)
+    max_item_width = barcode_x - (x + 2) - 10
+    item_text_width = min(item_text_width, max_item_width)
 
     # Calculate the height of the item text (same as before)
     item_lines = wrap(item_text, FONT_REG, FS_ITEM, w)
@@ -223,6 +228,10 @@ def draw_label(c, to_raw, from_text, item_text):
     # y = draw_left(c, x, y, w, item_text, FS_ITEM)
     y = draw_left(c, x + 2, y, w, item_text, FS_ITEM)  # Adjust x by adding the same margin (2)
 
+    # Draw barcode text on the right
+    c.setFont(FONT_REG, FS_ITEM)
+    c.drawString(barcode_x, y - FS_ITEM, barcode_text)
+
     # spacing to next block (divider) removed, as we're using a box now
 
     # ============================================================
@@ -242,26 +251,41 @@ def draw_label(c, to_raw, from_text, item_text):
     draw_right(c, x, yf, w, from_text, FS_FROM)
 
 # --- public API ---
-def generate_label_pdf(input_path, output_folder):
+def generate_label_pdf(input_path, output_folder, barcode_csv_path):
     """
     Reads data from input_path (CSV), generates a PDF in output_folder.
     Returns the filename of the generated PDF.
     """
-    data = fetch_address.get_data(input_path)
+    data, raw_data = fetch_address.get_data(input_path)
+    barcodes_data= barcodes.read_json(barcode_csv_path)
+    barcodes_data_with_id = []
+    for page, codes in barcodes_data.items():
+        for index in range(len(codes)):
+            barcodes_data_with_id.append(
+                f"{page}.{index+1} - {codes[index]}"
+            )
 
     base = os.path.splitext(os.path.basename(input_path))[0]
     out_name = f"LABELS_{base}.pdf"
     out_path = os.path.join(output_folder, out_name)
+    out_with_barcodes_name = f"{base}_WITH_BARCODES.csv"
+    out_with_barcodes_path = os.path.join(output_folder, out_with_barcodes_name)
 
     c = canvas.Canvas(out_path, pagesize=(PAGE_W, PAGE_H))
-    for row in data:
+    for row, barcode_text, raw_data_row in zip(data, barcodes_data_with_id, raw_data):
         to_text = str(row.get("to", "")).strip()
         item_text = str(row.get("item", "")).strip()
         from_text = FROM_ADDRESS.strip()
-        draw_label(c, to_text, from_text, item_text)
+        draw_label(c, to_text, from_text, item_text, barcode_text)
         c.showPage()
+        raw_data_row["BARCODE"] = barcode_text.split(" - ")[1]
     c.save()
-    return out_name
+
+    # save updated CSV with barcodes
+    barcodes.generate_post_office_file(out_with_barcodes_path, raw_data)
+
+    # return out_name
+    return [out_name, out_with_barcodes_name]
 
 # optional CLI
 if __name__ == "__main__":

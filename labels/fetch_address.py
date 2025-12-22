@@ -33,21 +33,23 @@ def get_data(filepath) -> list:
     processed_data = []
 
     for entry in raw_data:
-        to_address = entry.get("*Shipping Address Line 1")
+        # to_address = entry.get("Shipping Address Line 1")
+        to_address = entry.get("Address Line 1")
         if not to_address:
             print(entry)
             continue
-            raise ValueError("Missing required field: '*Shipping Address Line 1'")
+            # raise ValueError("Missing required field: 'Shipping Address Line 1'")
+            raise ValueError("Missing required field: 'Address Line 1'")
 
-        item_name = entry.get("*Product Name")
+        item_name = entry.get("Product Name")
         if not item_name:
             print(entry)
             continue
-            raise ValueError("Missing required field: '*Product Name'")
+            raise ValueError("Missing required field: 'Product Name'")
 
         processed_data.append({
             "to": to_address,
             "item": item_name
         })
 
-    return processed_data
+    return processed_data, raw_data

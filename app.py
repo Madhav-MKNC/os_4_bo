@@ -95,25 +95,30 @@ def convert_excel():
 @app.route("/generate_labels", methods=["GET", "POST"])
 def generate_labels():
     if request.method == "POST":
-        file = request.files.get("file")
+        main_file = request.files.get("file")
+        barcode_file = request.files.get("barcode_file")
         
         # Check if file exists and is a CSV
-        if not file or not file.filename.endswith(".csv"):
+        if not main_file or not main_file.filename.endswith(".csv"):
             return "Please upload a valid CSV file.", 400
-        
-        # Save input file
-        input_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        file.save(input_path)
 
-        try:
-            # Call function from make_labels.py
-            # Pass input path and output folder; Expect back the PDF filename
-            output_filename = generate_label_pdf(input_path, OUTPUT_FOLDER)
-            
-            return redirect(url_for("show_results", files=output_filename))
-            
-        except Exception as e:
-            return f"Error generating labels: {e}", 500
+        if not barcode_file or not barcode_file.filename.endswith(".json"):
+            return "Please upload a valid barcode JSON file.", 400
+
+        # Save input file
+        input_path = os.path.join(UPLOAD_FOLDER, main_file.filename)
+        main_file.save(input_path)
+
+        barcode_path = os.path.join(UPLOAD_FOLDER, barcode_file.filename)
+        barcode_file.save(barcode_path)
+
+        output_filenames = generate_label_pdf(
+            input_path,
+            OUTPUT_FOLDER,
+            barcode_csv_path=barcode_path
+        )
+        print(output_filenames)
+        return redirect(url_for("show_results", files=",".join(output_filenames)))
 
     return render_template("generate_labels.html")
 

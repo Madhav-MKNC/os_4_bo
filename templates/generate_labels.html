@@ -41,6 +41,15 @@
                 border-color: #00ffccaa;
             }
 
+            /* Styling for Labels */
+            label {
+                font-size: 16px; /* Make label text larger */
+                font-weight: bold; /* Make label text bold */
+                padding: 10px;
+                display: block; /* Ensure label takes up full width */
+                width: 100%; /* Ensure labels take up the full width of the form */
+            }
+
             input[type="file"] {
                 color: #00ffcc;
                 background: transparent;
@@ -52,6 +61,7 @@
                 width: 260px;
                 text-align: center;
                 transition: all 0.3s ease;
+                margin-bottom: 20px;
             }
 
             input[type="file"]::-webkit-file-upload-button {
@@ -174,7 +184,10 @@
             enctype="multipart/form-data"
             onsubmit="showLoading()"
         >
+            <label>Addresses File:</label>
             <input type="file" name="file" accept=".csv" required />
+            <label>Barcodes File:</label>
+            <input type="file" name="barcode_file" accept=".json" />
             <button type="submit">Generate PDF</button>
         </form>
 
