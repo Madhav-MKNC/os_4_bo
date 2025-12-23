@@ -3,19 +3,13 @@ import pandas as pd
 import json
 import chardet
 
-from validation import *
-
-
-# Directories
-INPUT_DIR = "input"
-OUTPUT_DIR = "outputs"
-os.makedirs(INPUT_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
+from configs import INPUT_FOLDER, OUTPUT_FOLDER
+from processing_and_pre_processing.validation import *
 
 
 def csv_to_json(file_name):
     """Convert a CSV file into JSON-like Python dictionaries with safe encoding detection."""
-    file_path = os.path.join(INPUT_DIR, file_name)
+    file_path = os.path.join(INPUT_FOLDER, file_name)
 
     # Detect encoding safely
     with open(file_path, 'rb') as f:
@@ -60,7 +54,7 @@ def process_files(files):
 
     # Save any failed files list
     if failed_files:
-        failed_files_output_file_path = os.path.join(OUTPUT_DIR, "failed_files.txt")
+        failed_files_output_file_path = os.path.join(OUTPUT_FOLDER, "failed_files.txt")
         with open(failed_files_output_file_path, 'w', encoding='utf-8') as file:
             file.write("\n".join(failed_files))
         mknc_outputs.append(failed_files_output_file_path)
@@ -140,7 +134,7 @@ def process_files(files):
     # Step 4: Save valid CSV
     df_valid = pd.json_normalize(merged_json_valid_entries)
     df_valid = df_valid[order]
-    valid_file = os.path.join(OUTPUT_DIR, f"Order_Upload_Valid_{len(merged_json_valid_entries)}.csv")
+    valid_file = os.path.join(OUTPUT_FOLDER, f"Order_Upload_Valid_{len(merged_json_valid_entries)}.csv")
     df_valid.to_csv(valid_file, index=False)
     print(f"✅ Saved valid file: {valid_file}")
     mknc_outputs.append(valid_file)
@@ -150,7 +144,7 @@ def process_files(files):
         df_invalid = pd.json_normalize(invalid_entries)
         cols = order + ["FILENAME, INDEX, ROW"] if "FILENAME, INDEX, ROW" in df_invalid.columns else order
         df_invalid = df_invalid[cols]
-        invalid_file = os.path.join(OUTPUT_DIR, f"Invalid_{len(invalid_entries)}.csv")
+        invalid_file = os.path.join(OUTPUT_FOLDER, f"Invalid_{len(invalid_entries)}.csv")
         df_invalid.to_csv(invalid_file, index=False)
         print(f"⚠️ Saved invalid file: {invalid_file}")
         mknc_outputs.append(invalid_file)

@@ -3,7 +3,7 @@ import json
 import os
 import chardet
 
-from validation import *
+from processing_and_pre_processing.validation import *
 
 # Directories
 INPUT_DIR = "input"

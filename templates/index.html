@@ -74,16 +74,16 @@
         <h2>Welcome to the Order Processing Matrix</h2>
 
         <div class="option-container">
-            <a class="option-btn" href="{{ url_for('os1_phone') }}">
+            <a class="option-btn" href="{{ url_for('os_1_parser_routes.os1_phone') }}">
                 Address Processing (Vaishali)
             </a>
-            <a class="option-btn" href="{{ url_for('convert_excel') }}">
+            <a class="option-btn" href="{{ url_for('processing_and_pre_processing_routes.convert_excel') }}">
                 Pre Processing (Vaishali)
             </a>
-            <a class="option-btn" href="{{ url_for('upload_files') }}">
+            <a class="option-btn" href="{{ url_for('processing_and_pre_processing_routes.upload_files') }}">
                 Post Processing (Neekhil)
             </a>
-            <a class="option-btn" href="{{ url_for('generate_labels') }}">
+            <a class="option-btn" href="{{ url_for('label_routes.generate_labels') }}">
                 Generate Labels (PDF)
             </a>
         </div>
