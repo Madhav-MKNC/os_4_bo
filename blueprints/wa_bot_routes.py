@@ -36,7 +36,11 @@ def webhook():
             return challenge, 200
         return "forbidden", 403
 
-    msg = request.json["entry"][0]["changes"][0]["value"]["messages"][0]
+    value = request.json["entry"][0]["changes"][0]["value"]
+    if "messages" not in value:
+        return "ok", 200
+
+    msg = value["messages"][0]
     text = msg["text"]["body"]
     user = msg["from"]
 
