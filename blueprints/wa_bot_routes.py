@@ -2,6 +2,8 @@ from flask import Flask, Blueprint, jsonify, render_template, request
 import requests
 import os
 
+from wa_bot.storage import Chats
+
 
 wa_bot_routes = Blueprint('wa_bot_routes', __name__)
 
@@ -10,7 +12,7 @@ TOKEN = os.environ["WA_TOKEN"]
 PHONE_ID = os.environ["WA_PHONE_ID"]
 
 
-MESSAGES = []  # in-memory log
+all_chats = Chats() # in-memory log
 
 
 def send(to, text):
@@ -44,11 +46,10 @@ def webhook():
     text = msg["text"]["body"]
     user = msg["from"]
 
-    MESSAGES.append(f"{user}: {text}")
-
     if text.strip().lower() == "/all":
-        reply = "\n".join(MESSAGES) or "No messages yet"
+        reply = "\n".join(all_chats.get_chat(user)) or "No messages yet"
     else:
+        all_chats.add_message(user, text)
         reply = "ok"
 
     send(user, reply)
