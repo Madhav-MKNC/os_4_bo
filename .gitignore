@@ -7,7 +7,15 @@ input
 outputs
 upload
 uploads
+output_dir
+phone_number_lookup.txt
+whatsapp.txt
+tmp
+input_dir
 
+*.zip
+*.json
+*.txt
 
 .env
 
@@ -15,10 +23,4 @@ __pycache__/
 
 *.pyc
 *.pyo
-
-output_dir
-phone_number_lookup.txt
-whatsapp.txt
-tmp
-input_dir
 

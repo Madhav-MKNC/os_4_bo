@@ -16,6 +16,7 @@ from blueprints.label_routes import label_routes
 from blueprints.os_1_parser_routes import os_1_parser_routes
 from blueprints.processing_and_pre_processing_routes import processing_and_pre_processing_routes
 from blueprints.wa_bot_routes import wa_bot_routes
+from blueprints.daily_reports_routes import daily_reports_routes
 
 
 # Flask app
@@ -28,6 +29,7 @@ app.register_blueprint(label_routes)
 app.register_blueprint(os_1_parser_routes)
 app.register_blueprint(processing_and_pre_processing_routes)
 app.register_blueprint(wa_bot_routes)
+app.register_blueprint(daily_reports_routes)
 
 
 if __name__ == "__main__":
