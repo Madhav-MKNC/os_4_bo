@@ -27,17 +27,11 @@ def upload_files():
         try:
             output_paths = process_files(saved_files)
             filenames = [os.path.basename(p) for p in output_paths]
-            return redirect(url_for("processing_and_pre_processing_routes.show_results", files=",".join(filenames)))
+            return redirect(url_for("general_routes.show_results", files=",".join(filenames)))
         except Exception as e:
             return f"OOPS: {e}"
 
     return render_template("process_csv.html")
-
-
-@processing_and_pre_processing_routes.route("/results")
-def show_results():
-    files = request.args.get("files", "").split(",")
-    return render_template("results.html", files=files)
 
 
 @processing_and_pre_processing_routes.route("/download/<filename>")
@@ -67,7 +61,7 @@ def convert_excel():
 
             # Step 3️⃣: Redirect to results or download
             filenames = [os.path.basename(p) for p in output_paths]
-            return redirect(url_for("processing_and_pre_processing_routes.show_results", files=",".join(filenames)))
+            return redirect(url_for("general_routes.show_results", files=",".join(filenames)))
 
         except Exception as e:
             return f"Error during Excel conversion or processing: {e}", 500

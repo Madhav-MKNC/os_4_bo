@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, request
 
 
 general_routes = Blueprint('general_routes', __name__)
@@ -16,3 +16,8 @@ def keep_alive():
     """
     return jsonify({'status': 'online'}), 200
 
+
+@general_routes.route("/results")
+def show_results():
+    files = request.args.get("files", "").split(",")
+    return render_template("results.html", files=files)

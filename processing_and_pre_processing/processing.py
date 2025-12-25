@@ -3,13 +3,13 @@ import pandas as pd
 import json
 import chardet
 
-from configs import INPUT_FOLDER, OUTPUT_FOLDER
+from configs import UPLOAD_FOLDER, OUTPUT_FOLDER
 from processing_and_pre_processing.validation import *
 
 
 def csv_to_json(file_name):
     """Convert a CSV file into JSON-like Python dictionaries with safe encoding detection."""
-    file_path = os.path.join(INPUT_FOLDER, file_name)
+    file_path = os.path.join(UPLOAD_FOLDER, file_name)
 
     # Detect encoding safely
     with open(file_path, 'rb') as f:

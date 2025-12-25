@@ -33,7 +33,7 @@ def generate_labels():
             barcode_csv_path=barcode_path
         )
         print(output_filenames)
-        return redirect(url_for("processing_and_pre_processing_routes.show_results", files=",".join(output_filenames)))
+        return redirect(url_for("general_routes.show_results", files=",".join(output_filenames)))
 
     return render_template("generate_labels.html")
 

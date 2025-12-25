@@ -5,11 +5,11 @@ from configs import UPLOAD_FOLDER, OUTPUT_FOLDER
 from wa_bot.daily_reports import generate_daily_report
 
 
-daily_reports_routes = Blueprint('wa_bot_routes', __name__)
+daily_reports_routes = Blueprint('daily_reports_routes', __name__)
 
 
 @daily_reports_routes.route("/generate_daily_report", methods=["GET", "POST"])
-def generate_labels():
+def generate_daily_reports():
     if request.method == "POST":
         zip_file = request.files.get("zip_file")
         
@@ -20,7 +20,7 @@ def generate_labels():
         zip_file.save(input_path)
 
         report_file = generate_daily_report(zip_file_path=input_path)
-        return redirect(url_for("processing_and_pre_processing_routes.show_results", report_file=report_file))
+        return redirect(url_for("general_routes.show_results", report_file=report_file))
 
     return render_template("daily_reports.html")
 

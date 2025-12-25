@@ -79,7 +79,7 @@ def os1_phone():
             lookup_path = write_lookup_file(OUTPUT_FOLDER)
 
             files = [os.path.basename(out_xlsx), lookup_path.name]
-            return redirect(url_for("processing_and_pre_processing_routes.show_results", files=",".join(files)))
+            return redirect(url_for("general_routes.show_results", files=",".join(files)))
 
         except Exception as e:
             return f"Error: {e}", 500
