@@ -52,7 +52,7 @@ def generate_report_image(data, date_str, output_path):
     sorted_data = sorted(data, key=lambda x: (x['present'] / x['total_mem'] * 100) if x['total_mem'] > 0 else 0, reverse=True)
 
     # Image dimensions - MUCH LARGER
-    width = 1400
+    width = 1600
     row_height = 70
     header_height = 80
     title_height = 80
@@ -90,7 +90,7 @@ def generate_report_image(data, date_str, output_path):
                 total_font = ImageFont.load_default()
     
     # Column widths - Better proportions
-    col_widths = [400, 220, 220, 220, 340]
+    col_widths = [600, 220, 220, 220, 340]
     
     # Colors
     title_bg = (255, 182, 193)
@@ -213,9 +213,8 @@ def generate_daily_report(zip_file_path, output_folder):
                 "content": PROMPT.format(data=chats)
             }]
         )
-        print(output_text)
+        print(f"[Generated Output]: {output_text}")
         report_data = extract_json_from_text(output_text)
-        print(report_data)
     except Exception as e:
         print(f"[ERROR in get_llm_response]: {e}")
         report_data = []
