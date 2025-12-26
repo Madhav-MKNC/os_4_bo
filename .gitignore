@@ -16,6 +16,7 @@ input_dir
 *.zip
 *.json
 *.txt
+wa_bot/*.jpg
 
 .env
 

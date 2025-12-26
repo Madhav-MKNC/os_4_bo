@@ -19,8 +19,11 @@ def generate_daily_reports():
         input_path = os.path.join(UPLOAD_FOLDER, zip_file.filename)
         zip_file.save(input_path)
 
-        report_file = generate_daily_report(zip_file_path=input_path)
-        return redirect(url_for("general_routes.show_results", report_file=report_file))
+        report_file = generate_daily_report(
+            input_path,
+            OUTPUT_FOLDER
+        )
+        return redirect(url_for("general_routes.show_results", files=",".join([report_file])))
 
     return render_template("daily_reports.html")
 

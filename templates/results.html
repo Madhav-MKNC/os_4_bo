@@ -140,7 +140,7 @@
             ("invalid" if "Invalid" in f else ("failed" if "failed" in f else
             "")) %}
             <a
-                href="{{ url_for('processing_and_pre_processing_routes.download_file', filename=f) }}"
+                href="{{ url_for('general_routes.download_file', filename=f) }}"
                 class="{{ cls }}"
                 download
                 >{{ f }}</a

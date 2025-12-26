@@ -34,11 +34,6 @@ def upload_files():
     return render_template("process_csv.html")
 
 
-@processing_and_pre_processing_routes.route("/download/<filename>")
-def download_file(filename):
-    return send_from_directory(OUTPUT_FOLDER, filename, as_attachment=True)
-
-
 # 🆕 COMBINED route: Excel → Preprocessing → CSV → process_files
 @processing_and_pre_processing_routes.route("/convert_excel", methods=["GET", "POST"])
 def convert_excel():
