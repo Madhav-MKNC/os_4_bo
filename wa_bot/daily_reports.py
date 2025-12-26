@@ -128,6 +128,7 @@ def generate_report_image(data, date_str, output_path):
     total_mem = sum(row['total_mem'] for row in sorted_data)
     total_present = sum(row['present'] for row in sorted_data)
     total_absent = sum(row['absent'] for row in sorted_data)
+    avg_percent = (total_present / total_mem * 100) if total_mem > 0 else 0
     
     # Draw data rows
     y = title_height + header_height
@@ -182,7 +183,7 @@ def generate_report_image(data, date_str, output_path):
     
     # Draw total row with thick borders
     draw.rectangle([0, y, width, y + row_height], fill=total_bg, outline='black', width=4)
-    total_values = ["", str(total_mem), str(total_present), str(total_absent), ""]
+    total_values = ["", str(total_mem), str(total_present), str(total_absent), f"{avg_percent:.2f}%"]
     x = 0
     for i, value in enumerate(total_values):
         # Vertical lines
