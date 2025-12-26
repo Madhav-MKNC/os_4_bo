@@ -33,4 +33,4 @@ app.register_blueprint(daily_reports_routes)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8123, debug=True)
+    app.run(host="0.0.0.0", port=8123, debug=False)

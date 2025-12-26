@@ -8,8 +8,8 @@ from wa_bot.daily_reports import generate_daily_report
 daily_reports_routes = Blueprint('daily_reports_routes', __name__)
 
 
-@daily_reports_routes.route("/generate_daily_report", methods=["GET", "POST"])
-def generate_daily_reports():
+@daily_reports_routes.route("/daily_reports_generation", methods=["GET", "POST"])
+def daily_reports_generation():
     if request.method == "POST":
         zip_file = request.files.get("zip_file")
         

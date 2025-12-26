@@ -5,7 +5,7 @@ from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 
-from llms import llm, extract_json_from_text, PROMPT
+from .llms import llm, extract_json_from_text, PROMPT
 
 def build_messages(chat_log):
     newline_index = chat_log.find('\n')
