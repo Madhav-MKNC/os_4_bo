@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
+from configs import FIXED_TEAM_NAMES
 from .llms import llm, extract_json_from_text, PROMPT
 
 def build_messages(chat_log):
@@ -209,16 +210,24 @@ def generate_daily_report(zip_file_path, output_folder):
         output_text = llm.get_llm_response(
             messages=[{
                 "role": "user",
-                "content": PROMPT.format(data=chats)
+                "content": PROMPT.format(
+                    data=chats,
+                    teams=FIXED_TEAM_NAMES
+                )
             }]
         )
         print(f"[Generated Output]: {output_text}")
         report_data_with_dates = extract_json_from_text(output_text)
-        report_data = max(report_data_with_dates, key=lambda x: len(x["data"])) # with most dates data
-        day_today = report_data["date"]
+        _report_data = max(report_data_with_dates, key=lambda x: len(x["data"])) # with most dates data
+        report_data = _report_data["data"]
+        _date = _report_data["date"]
+        date_obj = datetime.strptime(_date, "%d-%m-%Y")
+        day_name = date_obj.strftime("%A")
+        day_today = f"{_date} ({day_name})"
     except Exception as e:
         print(f"[ERROR in get_llm_response]: {e}")
         report_data = []
+        day_today = datetime.now().strftime("%d-%m-%Y (%A)")
 
     jpg_output = f"DAILY REPORT {day_today}.jpg"
     jpg_output_path = os.path.join(output_folder, jpg_output)

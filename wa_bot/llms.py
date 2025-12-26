@@ -55,8 +55,11 @@ class GroqLLM:
 # llm
 llm = GroqLLM()
 PROMPT = """
-Extract attendance data from the text and return ONLY valid JSON array. No explanations, no markdown.
-Extract: total_mem, present, absent as integers.
+Extract attendance data from the raw text with noise and return ONLY valid JSON array. No explanations, no markdown.
+You will be given a list of correct team names, so you will only use those names, and normalize the team names in the raw data to these fixed names.
+When a new team name appears in data you can go with it too.
+While formating always mention json.
+Extract: date (%d-%m-%Y format is strict); total_mem, present, absent as integers.
 
 Format:
 ```json
@@ -71,6 +74,10 @@ Format:
     ... other dates (if any)
 ]
 ```
+
+Fixed Team Names:
+
+{teams}
 
 Attendance data:
 
