@@ -95,9 +95,9 @@ def generate_report_image(data, date_str, output_path):
     # Colors
     title_bg = (255, 182, 193)
     header_bg = (173, 216, 230)
-    gold_bg = (255, 215, 0)
-    silver_bg = (192, 192, 192)
-    bronze_bg = (205, 127, 50)
+    gold_bg   = (255, 235, 150)
+    silver_bg = (225, 225, 225)
+    bronze_bg = (235, 190, 160)
     red_bg = (255, 0, 0)
     total_bg = (216, 191, 216)
     
@@ -173,8 +173,9 @@ def generate_report_image(data, date_str, output_path):
             if i > 0:
                 draw.line([(x, y), (x, y + row_height)], fill='black', width=2)
             
-            draw.text((x + col_widths[i]//2, y + row_height//2), value, 
-                      fill='black', font=data_font, anchor="mm")
+            font_to_use = header_font if idx in (0, 1, 2) else data_font
+            draw.text((x + col_widths[i]//2, y + row_height//2), value,
+                    fill='black', font=font_to_use, anchor="mm")
             x += col_widths[i]
         
         # Right border
