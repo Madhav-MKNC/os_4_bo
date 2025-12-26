@@ -61,8 +61,14 @@ Extract: total_mem, present, absent as integers.
 Format:
 ```json
 [
-  {{"team_name": "District Name", "total_mem": 0, "present": 0, "absent": 0}},
-  ...
+    {{
+        "date": "01-01-2010 (Friday)",
+        "data": [
+            {{"team_name": "District Name", "total_mem": 0, "present": 0, "absent": 0}},
+            ...
+        ]
+    }},
+    ... other dates (if any)
 ]
 ```
 
