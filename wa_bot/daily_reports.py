@@ -52,7 +52,7 @@ def generate_report_image(data, date_str, output_path):
     sorted_data = sorted(data, key=lambda x: (x['present'] / x['total_mem'] * 100) if x['total_mem'] > 0 else 0, reverse=True)
 
     # Image dimensions - MUCH LARGER
-    width = 1600
+    width = 1700
     row_height = 70
     header_height = 80
     title_height = 80
@@ -90,7 +90,7 @@ def generate_report_image(data, date_str, output_path):
                 total_font = ImageFont.load_default()
     
     # Column widths - Better proportions
-    col_widths = [600, 220, 220, 220, 340]
+    col_widths = [100, 600, 220, 220, 220, 340]
     
     # Colors
     title_bg = (255, 182, 193)
@@ -109,7 +109,7 @@ def generate_report_image(data, date_str, output_path):
     # Draw header row
     y = title_height
     draw.rectangle([0, y, width, y + header_height], fill=header_bg, outline='black', width=3)
-    headers = ["Team Name", "Total Mem", "Present", "Absent", "% Present"]
+    headers = ["Rank", "Team Name", "Total Mem", "Present", "Absent", "% Present"]
     x = 0
     for i, header in enumerate(headers):
         # Vertical lines between columns
@@ -156,6 +156,7 @@ def generate_report_image(data, date_str, output_path):
         
         # Draw cells
         values = [
+            str(idx + 1),
             row['team_name'],
             str(row['total_mem']),
             str(row['present']) if row['total_mem'] > 0 else "Absent",
@@ -184,7 +185,7 @@ def generate_report_image(data, date_str, output_path):
     
     # Draw total row with thick borders
     draw.rectangle([0, y, width, y + row_height], fill=total_bg, outline='black', width=4)
-    total_values = ["", str(total_mem), str(total_present), str(total_absent), f"{avg_percent:.2f}%"]
+    total_values = ["", "", str(total_mem), str(total_present), str(total_absent), f"{avg_percent:.2f}%"]
     x = 0
     for i, value in enumerate(total_values):
         # Vertical lines
