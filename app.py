@@ -3,6 +3,7 @@
 
 from flask import Flask
 import os
+from threading import Thread
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -18,6 +19,8 @@ from blueprints.processing_and_pre_processing_routes import processing_and_pre_p
 from blueprints.wa_bot_routes import wa_bot_routes
 from blueprints.daily_reports_routes import daily_reports_routes
 
+from reports.telegram_bot import bot_thread
+
 
 # Flask app
 app = Flask(__name__)
@@ -32,5 +35,14 @@ app.register_blueprint(wa_bot_routes)
 app.register_blueprint(daily_reports_routes)
 
 
-if __name__ == "__main__":
+def run():
     app.run(host="0.0.0.0", port=8123, debug=False)
+
+def app_thread():
+    t = Thread(target=run)
+    t.start()
+
+
+if __name__ == "__main__":
+    app_thread()
+    bot_thread()
