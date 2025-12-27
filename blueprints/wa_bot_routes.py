@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, jsonify, render_template, request
 import requests
 import os
 
-from wa_bot.storage import Chats
+from report.storage import Chats
 
 
 wa_bot_routes = Blueprint('wa_bot_routes', __name__)

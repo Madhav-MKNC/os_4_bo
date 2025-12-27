@@ -17,6 +17,7 @@ input_dir
 *.json
 *.txt
 wa_bot/*.jpg
+report/*.jpg
 
 .env
 

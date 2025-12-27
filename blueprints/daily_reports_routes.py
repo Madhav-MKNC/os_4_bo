@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, render_template, request, redirect, url_fo
 import os
 
 from configs import UPLOAD_FOLDER, OUTPUT_FOLDER
-from wa_bot.daily_reports import generate_daily_report
+from report.daily_reports import generate_daily_report
 
 
 daily_reports_routes = Blueprint('daily_reports_routes', __name__)
