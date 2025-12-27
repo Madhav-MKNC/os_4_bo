@@ -20,8 +20,8 @@ def daily_reports_generation():
         zip_file.save(input_path)
 
         report_file = generate_daily_report(
-            input_path,
-            OUTPUT_FOLDER
+            zip_file_path=input_path,
+            output_folder=OUTPUT_FOLDER
         )
         return redirect(url_for("general_routes.show_results", files=",".join([report_file])))
 

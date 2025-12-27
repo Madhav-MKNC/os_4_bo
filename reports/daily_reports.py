@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
-from configs import FIXED_TEAM_NAMES
+from configs import FIXED_TEAM_NAMES, OUTPUT_FOLDER
 from .llms import llm, extract_json_from_text, PROMPT
 
 def build_messages(chat_log):
@@ -207,8 +207,12 @@ def generate_report_image(data, date_str, output_path):
     print(f"[+] Report saved to {output_path}")
 
 
-def generate_daily_report(zip_file_path, output_folder):
-    _, chats = read_whatsapp_zip(zip_path=zip_file_path)
+def generate_daily_report(zip_file_path=None, output_folder=OUTPUT_FOLDER, chats=None):
+    if zip_file_path is not None:
+        _, chats = read_whatsapp_zip(zip_path=zip_file_path)
+    if chats is not None:
+        chats = chats
+
     try:
         output_text = llm.get_llm_response(
             messages=[{
